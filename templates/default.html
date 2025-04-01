@@ -16,4 +16,16 @@
   <hr>
   {{ end }}
 </article>
+<style>
+  @font-face {
+  font-family: 'FontWithASyntaxHighlighter';
+  src: 
+    url('/FontWithASyntaxHighlighter-Regular.woff2') 
+    format('woff2')
+  ;
+}
+code {
+  font-family: "FontWithASyntaxHighlighter", monospace;
+}
+</style>
 {{ template "_footer.html" .}}

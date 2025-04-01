@@ -7,7 +7,7 @@
 
     {{ $year := 0 }}
     {{ range $.Posts }}
-    {{ if stringContains .Filepath "/blog/" }}
+    {{ if stringContains .Filepath "/snippets/" }}
         {{- if not (eq .DatePublished.Year $year) }}
             {{- if gt $year 0 }}
                 </ul>
