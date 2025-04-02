@@ -3,7 +3,7 @@
   {{.Content}}
   <h2>Latests posts</h2>
   <ul>
-    {{ range $post := .Posts }}
+    {{ range $post := (slice .Posts 0 4) }}
     <li>
       <a href="/{{ $post.UrlPath }}">{{ $post.Title }}</a>
       -
@@ -14,6 +14,6 @@
     {{ end }}
   </ul>
   <p>View
-    <a href="/blog/">all posts on my blog</a>.</p>
+    <a href="/posts/">View all posts</a>.</p>
 </main>
 {{ template "_footer.html" }}
