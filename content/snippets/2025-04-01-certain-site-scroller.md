@@ -1,6 +1,5 @@
 +++
 title = "Image scroller for a certain suspicious site"
-tags = ["script"]
 +++
 
 

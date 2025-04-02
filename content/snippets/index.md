@@ -1,4 +1,4 @@
 +++
 title = "Code Snippets"
-template = "snippets.html"
+template = "posts.html"
 +++
