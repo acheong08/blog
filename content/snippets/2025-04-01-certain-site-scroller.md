@@ -2,6 +2,7 @@
 title = "Image scroller for a certain suspicious site"
 +++
 
+To be used with Tampermonkey
 
 ```js
 (function() {
