@@ -81,7 +81,6 @@ move() {
   hyprctl dispatch movetoworkspace "$new_workspace"
 }
 
-# Main script logic
 case "$1" in
   "offset")
     offset "$2"
