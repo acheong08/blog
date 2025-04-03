@@ -1,25 +1,30 @@
 {{ template "_header.html" .}}
-
 <main class="content container">
+  <div style="display:flex; alight-items: center; gap: 1rem;">
     <h1>{{$.Title}}</h1>
-
-    {{$.Content}}
+    <a href="/feed.xml" style="display: flex; align-items: center;">
+      <img src="https://www.svgrepo.com/show/163348/rss.svg" width="20" style="margin: 0;">
+      <span>RSS</span>
+    </a>
+  </div>
+  {{$.Content}}
 
     {{ $year := 0 }}
     {{ range filterPosts $.Posts $.Category }}
     {{- if not (eq .DatePublished.Year $year) }}
         {{- if gt $year 0 }}
-            </ul>
+        </ul>
         {{- end }}
-        <h2>{{ .DatePublished.Year }}</h2>
-        <ul>
-        {{- $year = .DatePublished.Year -}}
+  <h2>{{ .DatePublished.Year }}</h2>
+  <ul>
+    {{- $year = .DatePublished.Year -}}
     {{ end }}
     <li>
-        <a href="/{{ .UrlPath }}">{{ .Title }}</a><br >
-        <small>{{ .DatePublished.Format "Jan 2, 2006" }}</small>
+      <a href="/{{ .UrlPath }}">{{ .Title }}</a><br
+      >
+      <small>{{ .DatePublished.Format "Jan 2, 2006" }}</small>
     </li>
     {{- end -}}
-    </ul>
+  </ul>
 </main>
 {{ template "_footer.html" .}}
