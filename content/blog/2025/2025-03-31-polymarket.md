@@ -21,6 +21,7 @@ I stumbled into this rabbit hole after a crypto hackathon at Oxford, which, to n
 - Due to the price of the bond, the dispute structure intrinsically prices out smaller players.
 - Voters are not incentivized to reach the correct conclusion but rather align with the majority.
 - Outcome proposals are time limited, therefore a conflict cannot simply "wait" until more information is available.
+- You can update the rules mid-dispute!!!
 
 ## Scams
 
