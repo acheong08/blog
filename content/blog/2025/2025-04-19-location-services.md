@@ -37,18 +37,18 @@ By collecting this data over a long period of time, you can identify trends such
 
 In terms of individual tracking, by keeping a known BSSID, stalkers are able to find where someone has moved to, given that they bring their router with them.
 
-## A more private alternative
+## Preventing mass surveillance and limiting data exfiltration
 
-There are 2 sides to privacy here - when data is sent to Apple, and preventing mass surveillance, and limiting data exfiltration.
-
-The problem of data exfiltration ultimately comes down to the fact that data retrieved from the API can be recursively used to extract more data. This is actually relatively easy to solve - just send down the BSSIDs hashed and salted. Hashing prevents them from getting reused in requests and the salt prevents pre-computed rainbow tables considering BSSIDs only have 48 bits of entropy, even less if you consider the OUI/vendor identification.
+The problem of data exfiltration ultimately comes down to the fact that data retrieved from the API can be recursively used to extract more data. This is actually relatively easy to solve - just send down the BSSIDs hashed and salted. Hashing prevents them from getting reused in requests and the salt prevents pre-computed rainbow tables considering BSSIDs only have 48 bits of entropy, even less if you consider the OUI/vendor identification. To add more bits of entropy, [beacondb](https://codeberg.org/beacondb/beacondb/pulls/100) has proposed a BSSID+SSID hash.
 
 For `wifi_request_tile`, the user should prove that they are in or adjacent to the requested tile. This can be done by making the `clls/wloc` response signed, and to require the user to attach a proof that it is able to solve a certain number of hashes from the response. Based on a rough triangulation without signal strength data, the server could approximate the user's tile and allow the request based on proximity (e.g. user is allowed to request tiles ±10 units away). The downside to this is that now Apple has a more accurate idea of your location.
-
-However, observed requests have not contained any metadata or device fingerprints, suggesting that Apple does not tie this information to your identity.
 
 Even with these mitigations, individual access points can still be tracked over time, enabling stalkers.
 
 Most of the time, even without AP-based location service, phones are still able to know their approximate location, either with GPS or cell towers. Using this, when making a request to we could attach the expected tile key. If the user does not know approximately where the router is, they would not be able to get the location. To prevent brute force, at least 3 known BSSIDs need to submitted from the same tile - making it impossible for individual tracking. The performance of the location service is not hurt since it's not possible to do triangulation with less than 3 anchors anyways.
 
 TODO: Implement a real server with these mitigations using the records already exfiltrated from Apple.
+
+### Privacy from Apple
+
+While observed requests have not included any unique identifiers beyond IOS version and iPhone model, it is technically possible to correlate requests from IP addresses to authenticated ones. The number of people with a specific IOS/model combination sharing an IP is probably pretty limited. Removing device identifiers would be a good first step but overall, there isn't much to do especially considering nearly your entire movement range will be cached. TODO: More tests, check if it's possible (probably not) to get location data without revealing location?
