@@ -29,7 +29,9 @@ Both endpoints use protobuf and the definitions can be found [here](https://gith
 
 This approach has a few flaws, primarily the amount of time needed and the fact that there are isolated pockets which randomness cannot reach (e.g. Antarctic research station).
 
-Using the previously undiscovered `wifi_request_tile`, you can quickly build a seed database of 9-11 million records spread across the world in ~12 hours and apply the proximity technique to search from there. Overall, this shortens the time from 1 year to about a week to obtain the 2 billion records.
+Using the previously undiscovered `wifi_request_tile`, you can quickly build a seed database of 9-11 million records spread across the world in ~12 hours and apply the proximity technique to search from there. Overall, this shortens the time from 1 year to about a week to obtain the 2 billion records. In addition to the original paper, I've also collected data from China using their region-specific endpoint and shapefiles to identify whether a tile falls within its borders to automatically swap endpoints.
+
+<img src="https://github.com/user-attachments/assets/8da21d51-a506-4c32-94b7-b3ae853d65ab" alt="Grafana plot of collected seeds" height=400></img>
 
 By collecting this data over a long period of time, you can identify trends such as the movement of people from rural to urban China, the destruction of Gaza, and the Russian advance on Ukraine.
 
