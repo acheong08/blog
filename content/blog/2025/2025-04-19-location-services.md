@@ -4,7 +4,7 @@ title = "[WIP] On the privacy of Apple Location Services"
 
 Note: You can find most the code used in experimentation on GitHub: <https://github.com/acheong08/apple-corelocation-experiments/tree/main>
 
-# Background
+## Background
 
 Contrary to common belief, GPS is no longer the primary mechanism by which mobile devices obtain their location.
 
@@ -22,7 +22,7 @@ A few hundred meters still isn't that great in terms of anonymity, which is like
 
 Both endpoints use protobuf and the definitions can be found [here](https://github.com/acheong08/apple-corelocation-experiments/blob/main/pb/BSSIDApple.proto) and [here](https://github.com/acheong08/apple-corelocation-experiments/blob/main/pb/wifiTiles.proto). These were reverse engineered based on `_CLPWifiAPLocationReadFrom` from `CoreLocationProtobuf.framework` decompiled with Ghidra. For `wifi_request_tile`, a modified version of morton encoding is used. You can find the method [here](https://github.com/acheong08/apple-corelocation-experiments/blob/main/lib/morton/morton.go). It took me an infuriating amount of time to figure out - peak security through obscurity.
 
-# Surveillance
+## Surveillance
 
 ["Surveilling the Masses with Wi-Fi-Based Positioning Systems"](https://www.cs.umd.edu/~dml/papers/wifi-surveillance-sp24.pdf) was published in May of 2024 and detailed a 1 year process of extracting 2 billion records out of the system. The primary method involved first using random BSSIDs to brute force and find records. Then, using the found records, the `clls/wloc` endpoint would be used to recursively find nearby access points.
 <img alt="An illustration of recursively finding access points" src="/images/wloc-recursive.svg" width="400">
@@ -37,7 +37,7 @@ By collecting this data over a long period of time, you can identify trends such
 
 In terms of individual tracking, by keeping a known BSSID, stalkers are able to find where someone has moved to, given that they bring their router with them.
 
-# A more private alternative
+## A more private alternative
 
 There are 2 sides to privacy here - when data is sent to Apple, and preventing mass surveillance, and limiting data exfiltration.
 
