@@ -11,3 +11,5 @@ title = "Bookmarks"
 - [Caddy](https://caddyserver.com/) - Batteries included reverse proxy that handles TLS really well. Caddyfile is so much simpler than nginx configuration and the API allows for nice automation.
 - [Reposilite](https://github.com/dzikoysk/reposilite/) - Self-hosted maven repository. The docker-compose version *just works*.
 - [Podman](https://podman.io/) - Docker but better
+- [Super Productivity](https://super-productivity.com/) - To do list and task tracking
+- [Longhorn](https://longhorn.io/) - Distributed block storage for Kubernetes
