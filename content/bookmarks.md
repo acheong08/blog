@@ -13,3 +13,4 @@ title = "Bookmarks"
 - [Podman](https://podman.io/) - Docker but better
 - [Super Productivity](https://super-productivity.com/) - To do list and task tracking
 - [Longhorn](https://longhorn.io/) - Distributed block storage for Kubernetes
+- [Conduit](https://conduit.rs/) - Matrix Homeserver but Rust (Now that Dendrite has been abandoned...)
