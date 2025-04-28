@@ -1,0 +1,61 @@
+{{ template "default.html" .}}
+<style>
+  .no-margin img {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.gallery-container {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    margin: 2rem 0;
+}
+
+.gallery-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.gallery-container img:hover {
+    transform: scale(1.03);
+}
+.gallery-container figure {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+.gallery-container figcaption {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    text-align: center;
+}
+.gallery-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: stretch;
+    margin: 1rem 0;
+}
+.gallery-row img, video {
+    flex: 0 1 auto; /* Changed from flex: 1 1 0 */
+    min-width: 0;
+    width: auto;
+    max-width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+    display: block;
+}
+</style>
