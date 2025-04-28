@@ -1,6 +1,10 @@
 {{ template "default.html" .}}
 <style>
-  .no-margin img {
+  img {
+    margin-top: 0.1rem;
+    margin-bottom: 0.1rem;
+}
+.no-margin img {
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -43,7 +47,7 @@
 .gallery-row {
     display: flex;
     flex-wrap: nowrap;
-    gap: 1rem;
+    gap: 0.5rem; /* Adjusted gap to match recent changes */
     justify-content: center;
     align-items: stretch;
     margin: 1rem 0;
@@ -57,5 +61,31 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     transition: transform 0.2s;
     display: block;
+}
+@media (max-width: 768px) {
+    .gallery-container {
+      gap: 1rem;
+      padding: 0 0.5rem;
+    }
+
+    .gallery-container figure {
+      flex: 1 1 100%;
+      max-width: none;
+    }
+
+    .gallery-row {
+      flex-direction: column;
+      padding: 0 0.5rem;
+    }
+
+    .gallery-row img, .gallery-row video {
+      flex: 1 1 100%;
+      border-radius: 0.75rem;
+    }
+
+    .gallery-container figcaption {
+      font-size: 1.1rem;
+      margin: 0.75rem 0;
+    }
 }
 </style>

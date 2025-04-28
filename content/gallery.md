@@ -22,15 +22,13 @@ While I have a fair number of photos on my phone, I've never used social media e
 <style>
     .gallery-container {
         display: flex;
-        gap: 2rem;
+        gap: 1rem;
         justify-content: center;
         margin: 2rem 0;
-        flex-wrap: nowrap;
+        flex-wrap: wrap; /* Changed from nowrap to wrap */
     }
     .card {
-        flex: 1 1 0;
-        min-width: 0;
-        background: url('https://via.placeholder.com/200x120') center/cover no-repeat;
+        flex: 1 1 270px; /* Minimum width of 250px */
         background: url('https://via.placeholder.com/200x120') center/cover no-repeat;
         width: 100%;
         aspect-ratio: 5 / 3;
@@ -44,6 +42,7 @@ While I have a fair number of photos on my phone, I've never used social media e
         position: relative;
         overflow: hidden;
         text-decoration: none;
+        max-width: 400px; /* Added max-width for larger screens */
     }
     .card h3 {
         background: rgba(0,0,0,0.5);
@@ -62,4 +61,20 @@ While I have a fair number of photos on my phone, I've never used social media e
     .card.china { background-image: url('https://r2.duti.dev/pictures/thumbnails/china.jpg'); }
     .card.malaysia { background-image: url('https://r2.duti.dev/pictures/thumbnails/penang.jpg'); }
     .card.uk { background-image: url('https://r2.duti.dev/pictures/thumbnails/UK.jpg'); }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 768px) {
+        .gallery-container {
+            gap: 0.5rem;
+            padding: 0 1rem;
+        }
+        .card {
+            flex: 1 1 100%; /* Full width on mobile */
+            max-width: 100%;
+        }
+        .card h3 {
+            font-size: 1.5rem; /* Larger text for mobile */
+            padding: 1rem 0;
+        }
+    }
 </style>
