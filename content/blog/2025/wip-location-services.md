@@ -10,7 +10,7 @@ Contrary to common belief, GPS is no longer the primary mechanism by which mobil
 
 Instead, companies such as Google and Apple maintain large location databases of Wi-Fi hotspots and cell towers. Phones collect the data of beacons and their signal strength which they use to triangulate their location using data from the vendors.
 
-![Trilateration algorithm for n amount of points](/images/trilateration.png)
+![Trilateration algorithm for n amount of points](https://r2.duti.dev/blog/images/trilateration.png)
 
 Back in 2003, data for these databases were gathered through wardriving, and still is for semi-public datasets like WiGLE. However, for Apple and Google which holds control over almost the entirety of the mobile market, we have all become their wardrivers. Both IOS and Android periodically send up both your current location and a list of all nearby access points and their RSSI. By aggregating data from across devices, they use the same algorithm to triangulate the location of the access point.
 
@@ -25,7 +25,7 @@ Both endpoints use protobuf and the definitions can be found [here](https://gith
 ## Surveillance
 
 ["Surveilling the Masses with Wi-Fi-Based Positioning Systems"](https://www.cs.umd.edu/~dml/papers/wifi-surveillance-sp24.pdf) was published in May of 2024 and detailed a 1 year process of extracting 2 billion records out of the system. The primary method involved first using random BSSIDs to brute force and find records. Then, using the found records, the `clls/wloc` endpoint would be used to recursively find nearby access points.
-<img alt="An illustration of recursively finding access points" src="/images/wloc-recursive.svg" width="400">
+<img alt="An illustration of recursively finding access points" src="https://r2.duti.dev/blog/images/wloc-recursive.svg" width="400">
 
 This approach has a few flaws, primarily the amount of time needed and the fact that there are isolated pockets which randomness cannot reach (e.g. Antarctic research station).
 

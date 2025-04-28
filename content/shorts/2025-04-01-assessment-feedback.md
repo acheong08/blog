@@ -17,7 +17,7 @@ While this app is a dream for developers looking to automate music management, a
 
 Just by skimming, I could already feel the AI vibes. I also passed it into one of those detectors just to confirm (I know they aren't reliable for anything but they're using it on us anyways)
 
-<img src="/images/ai-detect.png" alt="Screenshot of scribbr AI detector showing 100%" width="200"/>
+<img src="https://r2.duti.dev/blog/images/ai-detect.png" alt="Screenshot of scribbr AI detector showing 100%" width="200"/>
 
 Beyond just the "AI vibes", it also just doesn't make sense as feedback. The feedback is on only part of a larger project where this specific bit lays out the requirements of an app I'll be building. The text simply lays out the goals and expected features and the feedback is meant to let us know whether the scope is too large, conciseness and relevance of the text, etc.
 
