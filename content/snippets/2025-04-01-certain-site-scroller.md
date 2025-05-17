@@ -56,3 +56,43 @@ To be used with Tampermonkey
     }
 })();
 ```
+
+Clicker on thumbnails for other site
+
+```js
+const interval = setInterval(() => {
+    const thumbs = document.getElementsByClassName('fileThumb');
+    console.log(thumbs)
+    if (thumbs.length > 0) {
+        for (let i = 0; i < thumbs.length; i++) {
+            thumbs[i].click();
+        }
+        clearInterval(interval);
+    }
+}, 500);
+```
+
+Fix scroll on sites that disable it (for ad reasons)
+
+```js
+// Remove inline onscroll handlers
+window.onscroll = null;
+document.onscroll = null;
+
+// Override addEventListener to block new scroll listeners
+const origAddEventListener = EventTarget.prototype.addEventListener;
+EventTarget.prototype.addEventListener = function(type, listener, options) {
+  if (type === 'scroll') return;
+  return origAddEventListener.call(this, type, listener, options);
+};
+
+// Remove CSS that disables scrolling
+document.body.style.overflow = 'auto';
+document.documentElement.style.overflow = 'auto';
+
+// Remove scroll-blocking event handlers on body
+['touchmove', 'wheel', 'mousewheel'].forEach(evt => {
+  window.addEventListener(evt, e => e.stopImmediatePropagation(), true);
+  document.addEventListener(evt, e => e.stopImmediatePropagation(), true);
+});
+```
