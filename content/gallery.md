@@ -4,13 +4,13 @@ title = "Photo Gallery"
 +++
 
 <div class="gallery-container">
-    <a class="card china" href="/gallery/china">
+    <a class="card china" href="/gallery/china/">
         <h3> China </h3>
     </a>
-    <a class="card malaysia" href="/gallery/malaysia">
+    <a class="card malaysia" href="/gallery/malaysia/">
         <h3> Malaysia </h3>
     </a>
-    <a class="card uk" href="/gallery/uk">
+    <a class="card uk" href="/gallery/uk/">
         <h3> United Kingdom </h3>
     </a>
 </div>
