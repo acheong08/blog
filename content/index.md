@@ -5,6 +5,4 @@ template = "home.html"
 
 # ねえ もしもし聞こえてる?
 
-My name is Antonio - 2nd year Applied Software Engineering at Cardiff.
-
-I do some open source stuff on [GitHub](https://github.com/acheong08/), mostly to do with reverse engineering.
+Hello! My name is Antonio. I write code and sometimes post them on [GitHub](https://github.com/acheong08/) with my main interests being reverse engineering, cybersecurity, and self-hosting.
