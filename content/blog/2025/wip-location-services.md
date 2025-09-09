@@ -2,7 +2,7 @@
 title = "[WIP] On the Privacy of Apple Location Services"
 +++
 
-> [Skip the fluff](#endpoint-table)
+> [Skip technical stuff](#user-relevant-info)
 
 ## Background
 
@@ -96,7 +96,13 @@ Using the index numbers and associated symbols, the protobuf definition can then
 
 ---
 
-## Privacy Settings, Policy, and Reality
+## Data Collection and Analysis
+
+To analyze Apple's location service traffic, I intercepted HTTPS requests from an iPhone running IOS 18.6.2 over the course of 7 days using `mitmproxy`'s WireGuard mode. The device was used as a normal daily driver (apps opened, routes walked, payments made). Flows were captured and exported into a .flow file and analyzed offline. Below are conclusions drawn from an analysis of the decoded data based on the aforementioned reverse engineering.
+
+---
+
+## <span id="user-relevant-info">Privacy Settings, Policy, and Reality</span>
 
 [Less than 5% of users change their default settings](https://archive.uie.com/brainsparks/2011/09/14/do-users-change-their-settings/), and even fewer read through privacy policies. To make matters worse, software updates occasionally reset or alter these settings “by mistake,” which often goes unnoticed.
 
@@ -108,8 +114,6 @@ Long story short: under **Privacy & Security > Location Services > System Servic
 - **Apple Pay Merchant Identification**
 - **Improve Maps**
 - **iPhone Analytics**
-
----
 
 ### Routing & Traffic
 
@@ -143,47 +147,96 @@ Note: the above visualizations show just a _single_ request. In reality, data is
 
 Oh and the "encryption"? That's just TLS. This traffic is not more or less secure than the average website. This also means that ISPs and adjacent network advesaries are able to sniff the SNI to determine the activity of your phone and thus possible behaviors.
 
-**TODO**
-
-- App uniqueness: Poll on app-install combinations to demonstrate how uniquely idenntifying they are within a given population or IP range.
-- Cross service correlation: Other Apple system services, possibly authenticated, are sent from the same IP address and may contain information that could be matched to the "anonymous" data.
-
 ### Apple Pay Merchant Information
 
 > _Apple Pay Merchant Identification: Your iPhone will use your current location to help provide more accurate merchant names when you use your physical Apple Card._
 
-This is pretty straightforward. The collected information is the card provider, currency, transaction ID, merchant name, and timestamp ([Cocoa](https://www.epochconverter.com/coredata))
+Collected data includes:
 
-From `https://gsp-ssl.ls.apple.com/dispatcher.arpc`
+- Card provider
+- Currency
+- Transaction ID
+- Merchant name
+- Timestamp
+
+Example (from `https://gsp-ssl.ls.apple.com/dispatcher.arpc`):
 
 ```json
-...
-    "6": {
-      "1": "MasterCard",
-      "11": "EUR",
-      "16": 1,
-      "17": "8D0DDB68-0C2D-4A39-AD20-77454B02D876",
-      "18": 0,
-      "2": "2TL BRUSSEL - NOORD",
-      "21": "",
-      "3": 4739811754110877696,
-      "8": 0,
-      "9": 1
-    }
+"6": {
+  "1": "MasterCard",
+  "11": "EUR",
+  "16": 1,
+  "17": "8D0DDB68-0C2D-4A39-AD20-77454B02D876",
+  "18": 0,
+  "2": "2TL BRUSSEL - NOORD",
+  "21": "",
+  "3": 4739811754110877696,
+  "8": 0,
+  "9": 1
+}
 ```
 
-What is surprising, is that the toggle only controls whether the data is sent, not whether it's collected. The data is then stored locally until the setting is enabled before being sent. For example, 4739811754110877696 decodes to 778263300 (August 30, 2025 4:15:00 PM), which is approximately a week before I enabled the privacy settings. Temporary privacy is thus made impossible.
+Surprisingly, disabling the toggle only stops **uploading** the data—not **collection**. Data is stored locally until you re-enable the setting, at which point it’s uploaded. In one case, a timestamp (4739811754110877696 → Aug 30, 2025) predated the moment I enabled the setting by about a week. In other words, temporary privacy is impossible.
 
-### Improve Maps and iPhone Analytics
+### Improve Maps & iPhone Analytics
 
-> _If you choose to enable Improve Maps, Apple will collect the GPS coordinates obtained through the Significant Locations feature on your device and correlate them with the street address associated with your Apple Account. This will enable Apple to better approximate the geographic location of that and other addresses. Apple will retain the resulting coordinates only in an anonymous form to improve Maps and other Apple location-based products and services. Your iOS, iPadOS, or visionOS device will also periodically send locations of where and when you launched apps, including the name of the apps, in an anonymous and encrypted form to Apple in order to improve Maps and other Apple location-based products and services._
+> _If you enable Improve Maps, Apple will collect GPS coordinates obtained via Significant Locations and correlate them with your Apple Account … Your device will also periodically send data about where and when you launch apps … in an anonymous and encrypted form …_
 
 Endpoint: `https://gsp64-ssl.ls.apple.com/hvr/v3/use`
-The payload is also not protobuf, only allowing us to deduce its contents through strings. A wide variety of data is sent to Apple through these endpoints, including:
 
-- Some open apps, but not all. Most commonly observed are network related apps (e.g. Wireguard, Mullvad, Little Snitch)
-- Locations associated with the Apple account (from Contacts app)
-- A selection of IP addresses and ports the user is connected to
+This endpoint doesn’t use protobuf, so decoding is limited to string analysis. Observed payloads include:
+
+- Subsets of open apps (network tools like WireGuard, Mullvad, Little Snitch are common)
+- Addresses linked to the Apple account (e.g. from Contacts)
+- IPs and ports the device is connected to
 - BSSIDs
 
-Overall, it's an odd mishmash of data and binary blobs. With settings disabled, requests are still sent, though smaller and lacking detail, including only home location and timestamps.
+With settings disabled, requests are still sent—but reduced to just home location and timestamps.
+
+### <span id="endpoint-summary">Endpoint summary</span>
+
+| Domain                   | Path(s)            | Controlled by Setting                 | Data Sent                                                                                         | Notes                                                                  |
+| ------------------------ | ------------------ | ------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `gsp10-ssl.apple.com`    | `/pds/pd`, `/au`   | **Routing & Traffic**                 | GPS coordinates, travel speed, barometric pressure, app launches near POIs                        | Sent continuously; “anonymous” but easily linkable via app/device data |
+| `gsp-ssl.ls.apple.com`   | `/dispatcher.arpc` | **Apple Pay Merchant Identification** | Card provider, currency, transaction ID, merchant name, timestamp                                 | Data still collected locally when disabled; uploaded once re-enabled   |
+| `gsp64-ssl.ls.apple.com` | `/hvr/v3/use`      | **Improve Maps & iPhone Analytics**   | Open apps (esp. network tools), Apple account–linked addresses, IPs and ports, BSSIDs, timestamps | Requests persist even when disabled, but with reduced detail           |
+| `gsp10-ssl.apple.com`    | `/hcy/pbcwloc`     | Always on (not user-controlled)       | Nearby BSSIDs, cell provider, location, movement/activity                                         | Passive Wi-Fi/cell scanning; builds Apple’s positioning database       |
+
+---
+
+## Privacy TODO
+
+- App uniqueness: Poll on app-install combinations to demonstrate how uniquely idenntifying they are within a given population or IP range.
+- Cross service correlation: Other Apple system services, possibly authenticated, are sent from the same IP address and may contain information that could be matched to the "anonymous" data.
+- Simulate devices based on captured data and do a practical in correlating traffic
+- Perspective of a network adversary: How much can an ISP glean from use the traffic patterns and sizes. Train a ML model.
+
+---
+
+## Update patterns of Apple's location database
+
+Over the course of a week, I recorded **436,771 location changes** and **10,301 unique BSSIDs** across 10 evenly distributed groups of 5 tile keys.
+
+- **Average distance change:** 0.69 m
+- **Minimum distance:** 0.01 m
+- **Maximum distance:** 24.87 m
+- **Standard deviation:** 1.01 m
+
+<img alt="Average distance moved over time" src="https://r2.duti.dev/blog/images/distance_changes_plot.png" style="max-height:30rem;" />
+
+At first glance, the average distance and tight standard deviation seem artificial. Digging deeper, the update behavior looks even stranger:
+
+<img alt="Distribution of time between updates" src="https://r2.duti.dev/blog/images/unique_locations_analysis.png" style="max-height:20rem;"/>
+
+Most changes involved oscillating between just a handful of unique coordinates (typically 1–6 based on the number of days of recorded data), even though some access points showed up to 93 separate “update” events. This strongly suggests that only **one genuine update occurs per day**, with locations oscillating during the update window rather than reflecting real movement.
+
+<img alt="Distribution of time between updates" src="https://r2.duti.dev/blog/images/update_intervals_analysis.png" style="max-height:20rem;"/>
+
+Every day, there is a consistent **5-hour update window**—from **05:00 to 09:00 UTC**—during which database entries are refreshed. Each access point is guaranteed at least one update every 24 hours, though many are updated multiple times within the window. This clustering explains the bursts of short intervals seen in the update graphs.
+
+Importantly, the update windows are not isolated to specific tiles. Instead, updates occur across large numbers of tiles simultaneously, implying that Apple maintains a **centralized database** rather than distributed, region-specific updates.
+
+**Open questions:**
+
+- The oscillation pattern produces a distinctive distribution shape in the data. This could be intentional, perhaps as a **privacy mechanism** to obscure whether updates are tied to human presence.
+- The artificial feel of the distances suggests further smoothing or obfuscation may be applied server-side.
