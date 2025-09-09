@@ -1,54 +1,75 @@
 +++
-title = "[WIP] On the privacy of Apple Location Services"
+title = "[WIP] On the Privacy of Apple Location Services"
 +++
 
-Note: You can find most the code used in experimentation on GitHub: <https://github.com/acheong08/apple-corelocation-experiments/tree/main>
+> [Skip the fluff](#endpoint-table)
 
 ## Background
 
-Contrary to common belief, GPS is no longer the primary mechanism by which mobile devices obtain their location.
+Contrary to popular belief, GPS is no longer the primary method mobile devices use to determine location.
 
-Instead, companies such as Google and Apple maintain large location databases of Wi-Fi hotspots and cell towers. Phones collect the data of beacons and their signal strength which they use to triangulate their location using data from the vendors.
+Instead, companies like Google and Apple maintain massive databases of Wi-Fi hotspots and cell towers. Phones collect signals from these beacons - including strength and identifiers - and use them to triangulate their position, with the help of data provided by these vendors.
 
-![Trilateration algorithm for n amount of points](https://r2.duti.dev/blog/images/trilateration.png)
+![Trilateration algorithm for n points](https://r2.duti.dev/blog/images/trilateration.png)
 
-Back in 2003, data for these databases were gathered through wardriving, and still is for semi-public datasets like WiGLE. However, for Apple and Google which holds control over almost the entirety of the mobile market, we have all become their wardrivers. Both IOS and Android periodically send up both your current location and a list of all nearby access points and their RSSI. By aggregating data from across devices, they use the same algorithm to triangulate the location of the access point.
+To build these databases, iOS and Android devices act as passive wardrivers: they continuously report nearby access points to Apple and Google. This data is then aggregated across countless devices to determine the locations of access points with high accuracy.
 
-There are two primary API endpoints used by IOS to find its location, `clls/wloc` and `wifi_request_tile`.
+A recent paper, ["Surveilling the Masses with Wi-Fi-Based Positioning Systems"](https://www.cs.umd.edu/~dml/papers/wifi-surveillance-sp24.pdf) (May 2024), explores how Apple’s location services can be weaponized to track movements worldwide - particularly in sensitive contexts like war zones and natural disasters.
 
-`clls/wloc` takes a list of BSSIDs, and returns up to 400 nearby BSSIDs with its coordinates. Using the signal strength of those access points, the triangulation is done on-device. Google has a similar endpoint following the ichnaea standard which instead requires the RSSI to be sent up and your location is triangulated by the service. This means that while Apple only knows your general location up to an accuracy of a few hundred meters, Google gets your location up to centimeters in accuracy.
+I found the paper fascinating. On the same day it was published, I began reverse engineering the `clls/wloc` endpoint using definitions decompiled from `CoreLocationProtobuf.framework`. Over the following weeks, I uncovered additional endpoints, such as:
 
-A few hundred meters still isn't that great in terms of anonymity, which is likely one reason why Apple has the `wifi_request_tile`. With this endpoint Apple will send all the *specifically indoors* access point locations for a given area. This is because while outdoors, cell towers and traditional GPS can be used instead. During testing, I found that my phone cached the location data for the entire island of Penang, therefore making it such that location services worked indoors even without internet or GPS. As long as you stay within the area for which data has been cached, Apple cannot know your location.
+- `wifi_request_tile`: allows retrieval of BSSIDs in a given area via an obfuscated tile key
+- `hcy/pbcwloc`: used for uploading data about newly discovered endpoints
 
-Both endpoints use protobuf and the definitions can be found [here](https://github.com/acheong08/apple-corelocation-experiments/blob/main/pb/BSSIDApple.proto) and [here](https://github.com/acheong08/apple-corelocation-experiments/blob/main/pb/wifiTiles.proto). These were reverse engineered based on `_CLPWifiAPLocationReadFrom` from `CoreLocationProtobuf.framework` decompiled with Ghidra. For `wifi_request_tile`, a modified version of morton encoding is used. You can find the method [here](https://github.com/acheong08/apple-corelocation-experiments/blob/main/lib/morton/morton.go). It took me an infuriating amount of time to figure out - peak security through obscurity.
+By combining the `tile` endpoint with an expanding search algorithm layered on top of `wloc`, I was able to reproduce the dataset described in the paper within a single day.
 
-## Surveillance
+With the external dataset re-created, the next question was: _how much data is actually being sent to Apple from devices in the first place?_  
+I’m writing this from the University of Cambridge, where I’m spending three weeks on a research project exploring exactly that.
 
-["Surveilling the Masses with Wi-Fi-Based Positioning Systems"](https://www.cs.umd.edu/~dml/papers/wifi-surveillance-sp24.pdf) was published in May of 2024 and detailed a 1 year process of extracting 2 billion records out of the system. The primary method involved first using random BSSIDs to brute force and find records. Then, using the found records, the `clls/wloc` endpoint would be used to recursively find nearby access points.
-<img alt="An illustration of recursively finding access points" src="https://r2.duti.dev/blog/images/wloc-recursive.svg" width="400">
+---
 
-This approach has a few flaws, primarily the amount of time needed and the fact that there are isolated pockets which randomness cannot reach (e.g. Antarctic research station).
+## Reverse Engineering the Protocols
 
-Using the previously undiscovered `wifi_request_tile`, you can quickly build a seed database of 9-11 million records spread across the world in ~12 hours and apply the proximity technique to search from there. Overall, this shortens the time from 1 year to about a week to obtain the 2 billion records. In addition to the original paper, I've also collected data from China using their region-specific endpoint and shapefiles to identify whether a tile falls within its borders to automatically swap endpoints.
+Apple relies on a custom RPC format known as **ARPC**. Unlike typical self-describing formats, ARPC does not embed enough information to fully decode requests and responses on its own.
 
-<img src="https://github.com/user-attachments/assets/8da21d51-a506-4c32-94b7-b3ae853d65ab" alt="Grafana plot of collected seeds" height=400></img>
+A standard **request** has the following structure:
 
-By collecting this data over a long period of time, you can identify trends such as the movement of people from rural to urban China, the destruction of Gaza, and the Russian advance on Ukraine.
+| Field          | Size     | Type          | Description                   |
+| -------------- | -------- | ------------- | ----------------------------- |
+| Version        | 2 bytes  | uint16        | Protocol version              |
+| Locale         | variable | pascal string | Locale string                 |
+| AppIdentifier  | variable | pascal string | Application identifier string |
+| OsVersion      | variable | pascal string | OS version string             |
+| FunctionId     | 4 bytes  | uint32        | Function ID                   |
+| Payload Length | 4 bytes  | uint32        | Length of payload             |
+| Payload        | variable | bytes         | Payload data                  |
 
-In terms of individual tracking, by keeping a known BSSID, stalkers are able to find where someone has moved to, given that they bring their router with them.
+Responses are trickier: they can contain an arbitrary number of fields of unknown sizes. To parse them, one can exploit the fact that the **payload length** encodes the number of bytes from its position to the end of the message. Practically, this means scanning the response with a sliding 4-byte window, checking if each candidate encodes a valid remaining length. If multiple candidates match, the largest valid body size and corresponding header size are chosen.
 
-## Preventing mass surveillance and limiting data exfiltration
+## Working out the protobuf
 
-The problem of data exfiltration ultimately comes down to the fact that data retrieved from the API can be recursively used to extract more data. This is actually relatively easy to solve - just send down the BSSIDs hashed and salted. Hashing prevents them from getting reused in requests and the salt prevents pre-computed rainbow tables considering BSSIDs only have 48 bits of entropy, even less if you consider the OUI/vendor identification. To add more bits of entropy, [beacondb](https://codeberg.org/beacondb/beacondb/pulls/100) has proposed a BSSID+SSID hash.
+The payload itself can contain any arbitrary bytes - including encrypted blobs - but in most observed cases it uses **protobuf**. The next trouble is thus how to find the protobuf definitions. While tools like [protodump](https://github.com/arkadiyt/protodump) exist to extract protobuf file descriptors from raw binary, this does not work on the custom compiler Apple for converting protobuf definition to Objective-C.
 
-For `wifi_request_tile`, the user should prove that they are in or adjacent to the requested tile. This can be done by making the `clls/wloc` response signed, and to require the user to attach a proof that it is able to solve a certain number of hashes from the response. Based on a rough triangulation without signal strength data, the server could approximate the user's tile and allow the request based on proximity (e.g. user is allowed to request tiles ±10 units away). The downside to this is that now Apple has a more accurate idea of your location.
+Most of the protobuf decoding is not done within the binary for locationd, geod, or geoanalyticsd itself, but rather in private frameworks from the dyld cache. Use [dyld-shared-cache-extractor](https://github.com/keith/dyld-shared-cache-extractor) to extract the framework binaries and [ipsw](https://github.com/blacktop/ipsw) to download the filesystem image for iOS.
 
-Even with these mitigations, individual access points can still be tracked over time, enabling stalkers.
+```sh
+ipsw download ipsw --version 18.6.2 --device iPhone15,2
+ipsw extract --files --pattern ".*" iPhone15,2_18.6.2_22G100_Restore.ipsw
+```
 
-Most of the time, even without AP-based location service, phones are still able to know their approximate location, either with GPS or cell towers. Using this, when making a request to we could attach the expected tile key. If the user does not know approximately where the router is, they would not be able to get the location. To prevent brute force, at least 3 known BSSIDs need to submitted from the same tile - making it impossible for individual tracking. The performance of the location service is not hurt since it's not possible to do triangulation with less than 3 anchors anyways.
+On macOS, the iOS Simulator runs its system binaries natively on the host, allowing us to attach lldb with SIP (System Integrity Protection) disabled.
 
-TODO: Implement a real server with these mitigations using the records already exfiltrated from Apple.
+`ps aux | grep simruntime | grep locationd` - Find the pid of locationd running within the simulator
+`sudo lldb -p <pid>` - Attach to process. Remember to [disable SIP](https://ioshacker.com/how-to/disable-system-integrity-protection-sip-on-apple-silicon-m1-macs)
+`br set -n "-[NSURLSessionTask resume]"` - Sets breakpoint on network requests
+`po [$x0 originalRequest]` - View details of the request (e.g. URL)
 
-### Privacy from Apple
+The next step is to figure out the address in Ghidra.
+To find the base load address, run `image list <binary name (e.g. geoanalyticsd)>`. Then, take the top frame address from the backtrace which matches your binary. `p/x <frame_runtime_address> - <base_load_address>` returns a file offset. Ghidra expects a virtual address, which can be calculated by adding `0x100000000`.
+As an example, `p/x 0x1048ddda0 - 0x1048d4000` = `0x9da0`. `p/x 0x100000000 + 0x9da0` = `0x100009da0`.
 
-While observed requests have not included any unique identifiers beyond IOS version and iPhone model, it is technically possible to correlate requests from IP addresses to authenticated ones. The number of people with a specific IOS/model combination sharing an IP is probably pretty limited. Removing device identifiers would be a good first step but overall, there isn't much to do especially considering nearly your entire movement range will be cached. TODO: More tests, check if it's possible (probably not) to get location data without revealing location?
+Finally, in Ghidra, go to `Navigation > Go To`, and paste in that address.
+
+![Screenshot of decompiled C for wloc protobuf](https://r2.duti.dev/blog/images/reversed-wloc-protoc.png)
+
+Using the index numbers and associated symbols, we manually reconstruct the definition.
