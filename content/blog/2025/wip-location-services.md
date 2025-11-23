@@ -1,20 +1,22 @@
 +++
-title = "[WIP] On the Privacy of Apple Location Services"
+title = "[WIP] On the Privacy of Apple Location Services & Analytics"
 +++
 
 > [Skip technical stuff](#user-relevant-info)
+
+> Btw this is a sequel to some of my prior research on how the location services work. See [https://github.com/acheong08/apple-corelocation-experiments/](https://github.com/acheong08/apple-corelocation-experiments/)
 
 ## Background
 
 Contrary to popular belief, GPS is no longer the primary method mobile devices use to determine location.
 
-Instead, companies like Google and Apple maintain massive databases of Wi-Fi hotspots and cell towers. Phones collect signals from these beacons—including strength and identifiers—and use them to triangulate their position, with the help of data provided by these vendors.
+Instead, companies like Google and Apple maintain massive databases of Wi-Fi hotspots and cell towers. Phones collect signals from these beacons - including strength and identifiers - and use them to triangulate their position, with the help of data provided by these vendors.
 
 ![Trilateration algorithm for n points](https://r2.duti.dev/blog/images/trilateration.png)
 
 To build these databases, iOS and Android devices act as passive wardrivers: they continuously report nearby access points to Apple and Google. This data is then aggregated across countless devices to determine the locations of access points with high accuracy.
 
-A recent paper, ["Surveilling the Masses with Wi-Fi-Based Positioning Systems"](https://www.cs.umd.edu/~dml/papers/wifi-surveillance-sp24.pdf) (May 2024), explores how Apple’s location services can be weaponized to track movements worldwide—particularly in sensitive contexts like war zones and natural disasters.
+A recent paper, ["Surveilling the Masses with Wi-Fi-Based Positioning Systems"](https://www.cs.umd.edu/~dml/papers/wifi-surveillance-sp24.pdf) (May 2024), explores how Apple’s location services can be weaponized to track movements worldwide - particularly in sensitive contexts like war zones and natural disasters.
 
 I found the paper fascinating. On the same day it was published, I began reverse engineering the `clls/wloc` endpoint using definitions decompiled from `CoreLocationProtobuf.framework`. Over the following weeks, I uncovered additional endpoints, such as:
 
@@ -46,11 +48,9 @@ A standard **request** has the following structure:
 
 Responses are trickier: they can contain an arbitrary number of fields of unknown sizes. To parse them, one can exploit the fact that the **payload length** encodes the number of bytes from its position to the end of the message. Practically, this means scanning the response with a sliding 4-byte window, checking if each candidate encodes a valid remaining length. If multiple candidates match, the largest valid body size and corresponding header size are chosen.
 
----
-
 ## Working Out the Protobuf
 
-The payload itself can contain any arbitrary bytes—including encrypted blobs—but in most observed cases it uses **protobuf**. The next challenge is discovering the protobuf definitions.
+The payload itself can contain any arbitrary bytes - including encrypted blobs - but in most observed cases it uses **protobuf**. The next challenge is discovering the protobuf definitions.
 
 Tools like [protodump](https://github.com/arkadiyt/protodump) can extract protobuf file descriptors from raw binaries, but they don’t work with Apple’s custom compiler, which converts protobuf definitions directly to Objective-C.
 
@@ -61,7 +61,7 @@ ipsw download ipsw --version 18.6.2 --device iPhone15,2
 ipsw extract --files --pattern ".*" iPhone15,2_18.6.2_22G100_Restore.ipsw
 ```
 
-On macOS, the iOS Simulator runs its system binaries natively, which allows attaching `lldb`—but only with SIP (System Integrity Protection) disabled.
+On macOS, the iOS Simulator runs its system binaries natively, which allows attaching `lldb` - but only with SIP (System Integrity Protection) disabled.
 
 ```sh
 ps aux | grep simruntime | grep locationd   # Find the PID of locationd running within the simulator
@@ -92,66 +92,83 @@ Finally, in Ghidra:
 
 <img alt="Screenshot of decompiled C for wloc protobuf" src="https://r2.duti.dev/blog/images/reversed-wloc-protoc.png" style="max-height: 40rem;"/>
 
-Using the index numbers and associated symbols, the protobuf definition can then be manually reconstructed.
+Using the index numbers and associated symbols, the protobuf definition can then be manually reconstructed. With protobuf definitions in hand, we can now find exactly what data is getting sent off to Apple.
 
----
+## <span id="user-relevant-info">Privacy Settings and Observed Traffic</span>
 
-## Data Collection and Analysis
+> Long story short: under **Privacy & Security > Location Services > System Services**, it’s worth turning off at least the following options:
+>
+> - **Routing & Traffic**
+> - **Apple Pay Merchant Identification**
+> - **Improve Maps**
+> - **iPhone Analytics**
 
-To analyze Apple's location service traffic, I intercepted HTTPS requests from an iPhone running IOS 18.6.2 over the course of 7 days using `mitmproxy`'s WireGuard mode. The device was used as a normal daily driver (apps opened, routes walked, payments made). Flows were captured and exported into a .flow file and analyzed offline. Below are conclusions drawn from an analysis of the decoded data based on the aforementioned reverse engineering.
+### So what is collected?
 
----
+Lets start off with what Apple claims.
 
-## <span id="user-relevant-info">Privacy Settings, Policy, and Reality</span>
+> **_Routing & Traffic_**: While you are in **transit** (for example, walking or driving), your iPhone will periodically send **GPS data, travel speed and direction, and barometric pressure** information in an anonymous and encrypted form to Apple... Additionally, when you **open an app** near a **point of interest** (for example, a business or park) your iPhone will send **location data** in an **anonymous and encrypted** form...
+>
+> **_Apple Pay Merchant Identification_**: Your iPhone will use your **current location** to help provide more accurate **merchant names** when you use your physical Apple Card.
+>
+> **_Improve Maps_**: Apple will collect the GPS coordinates obtained through the **Significant Locations** feature on your device and correlate them with the **street address associated with your Apple Account**... Your iOS, iPadOS, or visionOS device will also periodically send **locations of where and when you launched apps**, including the **name of the apps**, in an anonymous and encrypted form to Apple in order to improve Maps and other Apple location-based products and services.
 
-[Less than 5% of users change their default settings](https://archive.uie.com/brainsparks/2011/09/14/do-users-change-their-settings/), and even fewer read through privacy policies. To make matters worse, software updates occasionally reset or alter these settings “by mistake,” which often goes unnoticed.
+So in summary, GPS location, transaction information from NFC, your street address even if not present, and when & where apps were launched. While this isn't great, the fact that it is "anonymous", "encrypted", and periodic should hopefully make traffic impossible to tie to an identity.
 
-These defaults therefore play an outsized role in determining how much Apple learns about you.
+Of course words mean nothing without data. Lets make use of the reverse engineering and decode what Apple is sending off.
 
-Long story short: under **Privacy & Security > Location Services > System Services**, it’s worth turning off at least the following options:
+### Data Collection and Analysis
 
-- **Routing & Traffic**
-- **Apple Pay Merchant Identification**
-- **Improve Maps**
-- **iPhone Analytics**
+To analyze Apple's location service traffic, I intercepted HTTPS requests from an iPhone running IOS 18.6.2 with default settings over the course of 7 days using `mitmproxy`'s WireGuard mode. The device was used as a normal daily driver (apps opened, routes walked, payments made).
+
+`mitmweb --web-host 100.64.0.7 --mode wireguard --set allow_hosts="mitm\.it|.*\.ls\.apple\.com|gs-loc\.apple\.com" --listen-host 167.99.85.207 -w apple.flow --set view_filter="mitm\.it|.*\.ls\.apple\.com|gs-loc\.apple\.com"`
+
+Efforts were made to ensure only traffic for location services were captured and to prevent decryption of irrelevant data.
 
 ### Routing & Traffic
 
-> _While you are in transit (for example, walking or driving), your iPhone will periodically send GPS data, travel speed and direction, and barometric pressure information in an anonymous and encrypted form to Apple, to be used for augmenting crowd-sourced road traffic, roadway, pedestrian walkway, and atmospheric correction databases. Additionally, when you open an app near a point of interest (for example, a business or park) your iPhone will send location data in an anonymous and encrypted form to Apple which Apple may aggregate and use to let users know if that point of interest is open and how busy it is._
->
-> — [Apple Privacy Policy](https://www.apple.com/legal/privacy/data/en/location-services/)
+The primary endpoints associated with this setting are:
 
-On paper, this sounds innocuous. In practice, Apple’s definitions of **“transit”** and **“point of interest”** (POI) are so broad that nearly all activity qualifies:
+1. `https://gsp10-ssl.apple.com/pds/pd`. Contains a large array of a structure containing GPS coordinates, timestamps, and other sensor measurements.
 
-- “Transit” applies whenever your phone is moving—whether on foot, in a car, or even on a bicycle.
-- “Point of interest” applies whenever you stop somewhere—whether it’s a shop, a bus stop, or a friend’s house.
+2. `https://gsp10-ssl.apple.com/au`. Contains a list of app bundle identifiers, GPS coordinates, and timestamps
 
-Effectively, this means your iPhone is sending data to Apple whether you are moving or stationary—essentially _all the time_.
+- Between 3 and 4 requests were observed per day varying from 1.5kb to 124kb in size, directly corresponding to the number of steps taken since the previous request
+- The GPS locations are highly accurate and not obfuscated with technology like differential privacy. I could spot the exact table I sat at events and the general room I stayed in.
+- Requests to the 2 endpoints are usually made within milliseconds of each other.
 
-You might also expect the data to be sent in small, randomized chunks that are harder to link together. Instead, requests are grouped into larger batches, which makes correlation much easier.
+Data is collected, aggregated, and sent in batches, tying lots of unique data points together.
 
-Here’s what this looks like in practice:
+<img src="https://r2.duti.dev/blog/images/pds-transit-map2.png" width="400" alt="Map of me walking home after an event"> <img src="https://r2.duti.dev/blog/images/au-app-map.png" width="500" alt="Map of open app locations"><img src="https://r2.duti.dev/blog/images/pds-raw-request.png" width="400" alt="Screenshot of raw request showing fingerprintable information">
 
-1. `https://gsp10-ssl.apple.com/pds/pd` — routing data
-2. `https://gsp10-ssl.apple.com/au` — app usage near POIs
+The map shows just a single request, really visualizing how densely the points are packed.
 
-<img src="https://r2.duti.dev/blog/images/pds-transit-map.png" width="400" alt="Map of me walking home after an event"> <img src="https://r2.duti.dev/blog/images/au-app-map.png" width="500" alt="Map of open app locations">
+The requests also include device fingerprints (locale, OS version) and a unique UUID.
 
-Note: the above visualizations show just a _single_ request. In reality, data is aggregated and transmitted in larger bundles. When combined with:
+In terms of timing, requests tend to be sent while the phone is plugged in and idle. Oddly, requests also occur to be triggered when the alarm goes off.
 
-- **timing information** (even though the requests are batched, the exact time is recorded for events and points),
-- **device fingerprints** (locale, OS version, locationd/CFNetwork/Darwin version, etc.), and
-- **installed app sets**,
-
-...it becomes trivial to correlate requests from the same device. In fact, the installed app list often acts as a near-unique fingerprint, making it easy to tie activity back to a specific Apple account. Who else has the specific combination of HACK (HN Reader), Organic Maps, Discord, VLC, WireGuard, Maybank Malaysia, and Royal Mail, especially when further filtered by IP address and location.
-
-Oh and the "encryption"? That's just TLS. This traffic is not more or less secure than the average website. This also means that ISPs and adjacent network advesaries are able to sniff the SNI to determine the activity of your phone and thus possible behaviors.
+> TODO: Get a rooted phone and ripgrep through where that ID may be stored to be tied back to request
 
 ### Apple Pay Merchant Information
 
-> _Apple Pay Merchant Identification: Your iPhone will use your current location to help provide more accurate merchant names when you use your physical Apple Card._
+The only associated endpoint is `https://gsp-ssl.ls.apple.com/dispatcher.arpc`
 
-Collected data includes:
+Decoded data from a collected request:
+
+```json
+"6": {
+  "card_type": "MasterCard",
+  "currency": "EUR",
+  "16": 1,
+  "17": "8D0DDB68-0C2D-4A39-AD20-77454B02D876",
+  "18": 0,
+  "merchant": "2TL BRUSSEL - NOORD",
+  "21": "",
+  "timestamp": 4739811754110877696,
+  "8": 0,
+  "9": 1
+}
+```
 
 - Card provider
 - Currency
@@ -159,39 +176,21 @@ Collected data includes:
 - Merchant name
 - Timestamp
 
-Example (from `https://gsp-ssl.ls.apple.com/dispatcher.arpc`):
-
-```json
-"6": {
-  "1": "MasterCard",
-  "11": "EUR",
-  "16": 1,
-  "17": "8D0DDB68-0C2D-4A39-AD20-77454B02D876",
-  "18": 0,
-  "2": "2TL BRUSSEL - NOORD",
-  "21": "",
-  "3": 4739811754110877696,
-  "8": 0,
-  "9": 1
-}
-```
-
-Surprisingly, disabling the toggle only stops **uploading** the data—not **collection**. Data is stored locally until you re-enable the setting, at which point it’s uploaded. In one case, a timestamp (4739811754110877696 → Aug 30, 2025) predated the moment I enabled the setting by about a week. In other words, temporary privacy is impossible.
+  Surprisingly, disabling the toggle only stops **uploading** the data - not **collection**. Data is stored locally until you re-enable the setting, at which point it’s uploaded.
+  In this case, the timestamp (4739811754110877696 → Aug 30, 2025) is from a week before September 6th when this request was observed. All analytics settings were turned off at the time.
 
 ### Improve Maps & iPhone Analytics
-
-> _If you enable Improve Maps, Apple will collect GPS coordinates obtained via Significant Locations and correlate them with your Apple Account … Your device will also periodically send data about where and when you launch apps … in an anonymous and encrypted form …_
 
 Endpoint: `https://gsp64-ssl.ls.apple.com/hvr/v3/use`
 
 This endpoint doesn’t use protobuf, so decoding is limited to string analysis. Observed payloads include:
 
-- Subsets of open apps (network tools like WireGuard, Mullvad, Little Snitch are common)
-- Addresses linked to the Apple account (e.g. from Contacts)
+- Subsets of open apps (Network extensions like WireGuard, Mullvad, Little Snitch were observed)
+- Addresses linked to the Apple account even if not currently nearby. For example, I observed multiple Cardiff addresses despite being in Cambridge. Searching through the phone reveals that they come from the Contacts app.
 - IPs and ports the device is connected to
 - BSSIDs
 
-With settings disabled, requests are still sent—but reduced to just home location and timestamps.
+With settings disabled, requests are still sent - but reduced to just home location and timestamps.
 
 ### <span id="endpoint-summary">Endpoint summary</span>
 
@@ -200,20 +199,63 @@ With settings disabled, requests are still sent—but reduced to just home locat
 | `gsp10-ssl.apple.com`    | `/pds/pd`, `/au`   | **Routing & Traffic**                 | GPS coordinates, travel speed, barometric pressure, app launches near POIs                        | Sent continuously; “anonymous” but easily linkable via app/device data |
 | `gsp-ssl.ls.apple.com`   | `/dispatcher.arpc` | **Apple Pay Merchant Identification** | Card provider, currency, transaction ID, merchant name, timestamp                                 | Data still collected locally when disabled; uploaded once re-enabled   |
 | `gsp64-ssl.ls.apple.com` | `/hvr/v3/use`      | **Improve Maps & iPhone Analytics**   | Open apps (esp. network tools), Apple account–linked addresses, IPs and ports, BSSIDs, timestamps | Requests persist even when disabled, but with reduced detail           |
-| `gsp10-ssl.apple.com`    | `/hcy/pbcwloc`     | Always on (not user-controlled)       | Nearby BSSIDs, cell provider, location, movement/activity                                         | Passive Wi-Fi/cell scanning; builds Apple’s positioning database       |
+| `gsp10-ssl.apple.com`    | `/hcy/pbcwloc`     | **Improve Location Services**         | Nearby BSSIDs, cell provider, location, movement/activity                                         | Passive Wi-Fi/cell scanning; builds Apple’s positioning database       |
+
+### When and where is location data collected?
+
+Apple’s terms use vague phrases like _“in transit”_ and _“points of interest.”_ In practice, these cover nearly all daily activity:
+
+- **Transit** applies whenever your phone is moving - whether you’re walking, cycling, or driving.
+- **Points of interest** applies whenever you stop somewhere with a map label - your home, workplace, shops, restaurants, and so on.
+
+The result is that your iPhone sends location data whether you’re moving or standing still - essentially **all the time**. During testing, I saw logs for every commute, every stop at a shop or restaurant, and every app I opened throughout the week.
+
+### Cross-request correlation and deanonymization
+
+Apple’s traffic is highly susceptible to correlation across requests. Analytics data is usually sent in batches by background daemons, which means requests often share near-identical timestamps. For example, `/pds/pd` and `/au` are almost always transmitted within milliseconds of each other, and their GPS coordinates and timestamps can be matched to link app usage with a specific route.
+
+Beyond timing, every request carries device fingerprints - locale, iOS version, user agent, and IP address. Combined with the set of installed apps (which Apple already knows for each account), these details form a unique device profile. Even if Apple labels traffic as _“anonymous,”_ the mix of app usage, device metadata, and network identifiers makes it straightforward to connect requests back to an individual user.
+
+## Privacy implications and adversaries
+
+### Passive network observer (ISP, VPN provider, DNS resolver)
+
+- Can see **frequency, timing, and size** of requests, though the payload is encrypted.
+- Because requests are usually sent when the phone is **plugged in and idle**, an observer can infer certain device states from traffic patterns. Over time, this rhythm reveals aspects of the user’s daily habits.
+- Request size also correlates with movement: the more you travel, the larger the batch of location points, and thus the larger the encrypted request.
+
+Overall, Apple’s choice to delay and batch uploads reduces what passive observers can infer in real time, but longer-term patterns still leak useful information.
+
+### Active network observer (e.g. corporate VPN with MITM)
+
+An active network observer, such as a corporate VPN that performs MITM decryption, gains visibility comparable to Apple itself while also linking the traffic directly to employee identities.
+
+The main risk lies in **aggregation**: routes and app launches recorded at home may not be uploaded immediately but instead transmitted hours later during work hours when the VPN is active. Combined across multiple employees, this delayed reporting can reveal private relationships, conversations, or off-record activities.
+
+### Governments and Apple
+
+Consider a scenario: after an attack, investigators want to know who was present. They could compel Apple to provide all location-service requests from the area, along with the source IP addresses. With those, they can also obtain authenticated traffic sent from the same IPs, building a list of potential suspects.
+
+That dataset would contain:
+
+1. Device metadata from ARPC requests (locale, iOS version, etc.).
+2. Routes taken - technically “anonymous,” but timestamped and precise.
+3. Lists of apps opened at specific locations.
+
+By aligning timing between (2) and (3), investigators can link routes to app usage. Then, by cross-referencing with the list of installed apps Apple already knows per user, they can map (1) to (3) and deanonymize individuals. The reconstructed routes can also point to private addresses, workplaces, or safehouses.
+
+In the hands of an authoritarian state, the same process could be used to monitor everyone who attended a protest, then trace each person back to their home. Hence the often-heard advice: _“Don’t bring your phone to demonstrations.”_
+
+> **TODO**:
+>
+> - Cross service correlation: Other Apple system services, possibly authenticated, are sent from the same IP address and may contain information that could be matched to the "anonymous" data.
+> - App uniqueness: Poll on app-install combinations to demonstrate how uniquely idenntifying they are within a given population or IP range.
+> - Perspective of a network adversary: How much can an ISP glean from use the traffic patterns and sizes. Train a ML model. (DEAD! ML model doesn't work for motion activity due to batching and delays. Instead, we can tell _how much_ a user has moved)
+> - Match paths together based on start/end points for a multi-day movement report
 
 ---
 
-## Privacy TODO
-
-- App uniqueness: Poll on app-install combinations to demonstrate how uniquely idenntifying they are within a given population or IP range.
-- Cross service correlation: Other Apple system services, possibly authenticated, are sent from the same IP address and may contain information that could be matched to the "anonymous" data.
-- Simulate devices based on captured data and do a practical in correlating traffic
-- Perspective of a network adversary: How much can an ISP glean from use the traffic patterns and sizes. Train a ML model.
-
----
-
-## Update patterns of Apple's location database
+## [WIP] Update patterns of Apple's location database
 
 Over the course of a week, I recorded **436,771 location changes** and **10,301 unique BSSIDs** across 10 evenly distributed groups of 5 tile keys.
 
@@ -232,7 +274,7 @@ Most changes involved oscillating between just a handful of unique coordinates (
 
 <img alt="Distribution of time between updates" src="https://r2.duti.dev/blog/images/update_intervals_analysis.png" style="max-height:20rem;"/>
 
-Every day, there is a consistent **5-hour update window**—from **05:00 to 09:00 UTC**—during which database entries are refreshed. Each access point is guaranteed at least one update every 24 hours, though many are updated multiple times within the window. This clustering explains the bursts of short intervals seen in the update graphs.
+Every day, there is a consistent **5-hour update window** - from **05:00 to 09:00 UTC** - during which database entries are refreshed. Each access point is guaranteed at least one update every 24 hours, though many are updated multiple times within the window. This clustering explains the bursts of short intervals seen in the update graphs.
 
 Importantly, the update windows are not isolated to specific tiles. Instead, updates occur across large numbers of tiles simultaneously, implying that Apple maintains a **centralized database** rather than distributed, region-specific updates.
 

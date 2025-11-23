@@ -1,27 +1,35 @@
 {{ template "_header.html" .}}
 <main class="content container">
-  <div style="display:flex; alight-items: center; gap: 1rem;">
+  <div style="display:flex; align-items: center; gap: 1rem;">
     <h1>{{$.Title}}</h1>
     <a href="/feed.xml" style="display: flex; align-items: center;">
-      <img src="https://www.svgrepo.com/show/163348/rss.svg" width="20" style="margin: 0;">
+      <img src="https://www.svgrepo.com/show/163348/rss.svg" width="20" alt="RSS" style="margin: 0;">
       <span>RSS</span>
     </a>
   </div>
   {{$.Content}}
 
     {{ $year := 0 }}
-    {{ range filterPosts $.Posts $.Category }}
+    {{ $month := 0 }}
+    {{ range $.Posts }}
     {{- if not (eq .DatePublished.Year $year) }}
         {{- if gt $year 0 }}
         </ul>
         {{- end }}
   <h2>{{ .DatePublished.Year }}</h2>
-  <ul>
-    {{- $year = .DatePublished.Year -}}
+     {{- $year = .DatePublished.Year -}}
+     {{- $month = 0 -}}
+    {{ end }}
+    {{- if not (eq .DatePublished.Month $month) }}
+        {{- if gt $month 0 }}
+        </ul>
+       {{- end }}
+   <h4>{{ .DatePublished.Format "January" }}</h4>
+   <ul>
+     {{- $month = .DatePublished.Month -}}
     {{ end }}
     <li>
-      <a href="/{{ .UrlPath }}">{{ .Title }}</a><br
-      >
+      <a href="/{{ .UrlPath }}">{{ .Title }}</a><br>
       <small>{{ .DatePublished.Format "Jan 2, 2006" }}</small>
     </li>
     {{- end -}}

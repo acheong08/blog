@@ -1,5 +1,0 @@
-+++
-title = "Blog"
-template = "posts.html"
-+++
-
