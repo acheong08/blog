@@ -2,15 +2,138 @@
 title = "A Case for Golang"
 +++
 
-> **Note:** This post is directed towards a very specific group: Beginner Python programmers I'm about to be working with.
+Before we begin, what does Golang even look like?
+
+## Go in 100 seconds
+
+Golang is a imperative language similar to Python and Typescript with pretty much the same baseline abstractions.
+
+You have all the usually functions, variables, and mathematical operators.
+
+```go
+func Add(a, b int) int {
+    return a + b
+}
+
+func main() {
+    a := 1
+    b := 2
+    println(Add(a, b))
+}
+```
+
+Then you have `struct`s which are somewhat analogous to classes in object oriented programming which you can attach methods to:
+
+```go
+type User struct {
+    Name string
+    IsAdmin bool
+    Age int
+}
+
+func (u User) CanDrinkAlcohol() bool {
+    return u.Age >= 18
+}
+
+func main() {
+    user := User{"John", false, 69}
+    if user.CanDrinkAlcohol() {
+        println(user.Name + " can drink alcohol")
+    } else {
+        println(user.Name + " cannot drink")
+    }
+}
+```
+
+Interfaces are analogous to abstract classes which allow you to take in a generic type as long as it fulfills certain conditions:
+
+```go
+type Animal interface {
+    CookingTemp() int
+    Edible() bool
+}
+
+type Cow struct {}
+
+func (c Cow) CookingTemp() int {
+    return 100
+}
+
+func (c Cow) Edible() bool {
+    return true
+}
+
+type Cat struct {}
+
+func (c Cat) CookingTemp() int {
+    return -1
+}
+
+func (c Cat) Edible() bool {
+    return false
+}
+
+func Eat(a Animal) {
+    if !a.Edible() {
+        panic("Immigrant detected")
+    }
+    ...
+}
+
+func main() {
+    Eat(Cow{})
+    Eat(Cat{})
+}
+```
+
+You can run threads with the `go` keyword. No further complexity:
+
+```go
+func CountForever() {
+    n := 0
+    for {
+        println(n)
+        time.Sleep(1 * time.Second)
+    }
+}
+func main() {
+    // Starts 3 threads all counting together
+    go CountForever()
+    go CountForever()
+    go CountForever()
+}
+```
+
+You can import stuff from the internet:
+
+```go
+import (
+  "github.com/g-utils/overflow"
+  "math"
+)
+
+func main(){
+  a, b := math.MaxInt64 - 5, 6
+  sum, ok := overflow.Add(a, b)
+  if !ok {
+    panic("Overflow occurred!")
+  }
+}
+```
+
+There are also channels but that isn't something you have to worry about right now. With that, you've covered pretty much 95% of the language.
+
+---
+
+## Why Go?
 
 Programming languages are an odd tribal thing. I understand the resistance to learning anything new, especially when throughout academia, Python has been touted as the simplest, easiest language. I shall argue that it is simply not the case, and that its classic "simple" features actually make collaboration and long-term maintenance _more_ difficult.
 
 I am not pulling arguments out of my arse. In fact, Python was my primary language from 2018-2023, and I do still write my quick scripts in it. I have written open source projects in Python with over a hundred contributors and millions of downloads. On the other hand, I'm also not very smart. Tell me to debug an issue with lifetimes in Rust and I will struggle. My goal is to convince you to choose something easier, not more difficult.
 
-## What's even different between languages?
+### What's even different between languages?
 
-I'd say languages within the same category (Object oriented, functional, procedural, etc.) are generally very similar. In fact, Typescript and Golang are so similar that Microsoft was able to automatically translate the whole Typescript compiler into syntactically Golang [1].
+I'd say languages within the same category (Object oriented, functional, procedural, etc.) are generally very similar. In fact, Typescript and Golang are so similar that Microsoft was able to automatically translate the whole Typescript compiler into syntactically Golang [[1]](#references).
 
 ```typescript
 // TypeScript
@@ -79,7 +202,7 @@ The main difference you usually find is the keywords, available/standard librari
 
 My point here is that you shouldn't be afraid yet.
 
-## Simplicity and Complexity
+### Simplicity and Complexity
 
 Complexity tends to be more a feeling than a measure. However, a common symptom is surprising code, where it does something you don't expect and don't understand why or how, leading to the worst debugging experiences.
 
@@ -105,22 +228,48 @@ print(MyClass.generated_attr)  # "created by metaclass"
 
 Many of these complex features will never be written by the average developer, but instead be found deeply nested in a transitive dependency. Instead, this is simply not possible in Go. Other developers do not get to write code you don't understand syntactically. Once you learn the basics, you have learnt most of the entire language.
 
-## Static typing
+### Static typing
 
 For previous projects, our teams have pretty much agreed to make all of our Python code type hinted. I don't think I need to argue much about why this is preferred: catching bugs at compile time, easier collaboration since we can understand functionality from function signatures rather than reading internals, and improved LSP/editor experience with auto complete.
 
 The problem comes mainly from libraries. Even in 2025, many major libraries in Python are still completely missing or have incomplete type hints with `Any`'s sprinkled around all over the place. It is overall just not a very pleasant experience when building a large project that requires these dependencies.
 
-## Libraries and ecosystem
+### Libraries and ecosystem
 
 One huge selling point for Go is its massive standard library. For the majority of tasks, you rarely have to go out and depend on a random barely maintained package that risk turning into malware. We have seen the supply chain attacks like `xz-utils` and the NPM worm. In fact, our current project is being built specifically to protect against these threats. Why then, would we specifically choose an ecosystem that forces the use of many unnecessary and possibly insecure libraries? Given that we're mostly writing API services, we will need to do a fair bit of serialization from/into JSON/classes, which surprisingly Python does not natively support. This also ties back to how Python has too much magic, including those that mess with an object's properties, hence why serialization tends to include a lot of automatically generated properties.
 
-## Version compatibility and breakage
+Every tool you need is built into Go. `go fmt` for standardized formatting, `go test` for testing, `go mod` for dependency management, even the LSP is built into the tool chain. A fair number of us are using Neovim. Surely you remember all the trouble we had getting Spring Boot annotations working and the fact that Kotlin simply didn't work?
 
-Golang has compatibility built into its specification [2]. And with no breaking changes, decades old code can be easily reused without churn. Meanwhile, Python has numerous breaking changes in point releases alone [3]. It should be self evident why you want your code to continue working. Especially for a startup, it can be expensive or even economically impossible to update to a new Python version. This doesn't even take into account dependency incompatibilities due to versioning.
+### Version compatibility and breakage
+
+Golang has compatibility built into its specification [[2]](#references). And with no breaking changes, decade-old code can be easily reused without churn. Meanwhile, Python has numerous breaking changes in point releases alone [[3]](#references). It should be self evident why you want your code to continue working. Especially for a startup, it can be expensive or even economically impossible to update to a new Python version. This doesn't even take into account dependency incompatibilities due to versioning.
+
+### Concurrency and async
+
+We will be writing network code, and network code generally requires async (otherwise, you would only be able to handle one request at a time). How languages handle async tends to be the most significant differentiation. [What Color is Your Function](https://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/) [[4]](#references) is a good read on this issue. The gist of the issue is:
+
+1. You must pick a color for every function
+2. Different call syntax for each color
+3. Async functions can only be called from async functions
+4. Async functions are cumbersome to use
+5. Core libraries often force async functions on you
+
+And when it comes to library maintenance, you often have to completely duplicate your code to provide both a sync and async interface. I came across this problem maintaining the `revChatGPT` package and there was no solution beyond making a 1000 line file into 2000 lines [[5]](#references) (See `Chatbot` and `AsyncChatbot` class).
+
+You completely avoid this problem in Golang with green threads that automatically handle asynchronous IO or threading for long running compute. Surprisingly few languages get rid of colored functions, but Java is one of them (it is also therefore in the running for languages I am open to using).
+
+### Other stuff
+
+Performance? Cross compilation? Built in profiling for performance and race conditions? There are so much more that just make the experience of developing easier. One hidden gem is [Time Travel Debugging](https://rr-project.org/). Worked on this during my internship over the summer and I promise you, it makes life so much easier when you've got a weird bug you can't seem to reproduce reliably.
+
+<section id="references">
 
 ## References
 
 1. https://github.com/microsoft/typescript-go/discussions/467
 2. https://go.dev/doc/go1compat
 3. https://www.nicholashairs.com/posts/major-changes-between-python-versions/
+4. https://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/
+5. https://github.com/acheong08/ChatGPT/blob/main/src/revChatGPT/V1.py
+
+</section>
