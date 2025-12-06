@@ -16,9 +16,9 @@ on:
 # CONFIGURATION - Edit these for your fork
 # ============================================
 env:
-  UPSTREAM_REPO: "https://github.com/iv-org/invidious.git"
+  UPSTREAM_REPO: "https://github.com/iv-org/invidious-companion.git"
   UPSTREAM_BRANCH: "master"
-  FORK_BRANCH: "neko"
+  FORK_BRANCH: "master"
 # ============================================
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
       - name: Force push if clean
         if: steps.rebase.outputs.result == 'clean'
         run: |
-          git push --force-with-lease origin ${{ env.FORK_BRANCH }}
+          git push --force-with-lease origin HEAD:refs/heads/${{ env.FORK_BRANCH }}
           echo "Rebase clean — ${{ env.FORK_BRANCH }} updated from upstream/${{ env.UPSTREAM_BRANCH }}."
 
       - name: Create or update conflict issue
