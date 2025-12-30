@@ -16,7 +16,7 @@ I didn't know how much time it'd take to solve the issue, and obviously spending
 
 So VSCode it was.
 
-However, the combination of Java, VSCode, and Google Meet caused my CPU to run at 100% and crashed my laptop. For the entire rest of the interview, I was thermal throttled with a couple seconds latency between a key press and text showing up on screen.
+However, the combination of Java, VSCode, and Google Meet caused my CPU to run at 100% and crashed my laptop. For the entire rest of the interview, I was thermal throttled with a couple seconds latency between a key press and text showing up on screen. I ultimately ran out of time by ~5 seconds which infuriates me since that is significantly less than the time wasted by performance issues.
 
 After the interview, I solved the problem in barely 5 minutes. Shorter than the amount of time it took to recover from all the crashes.
 
@@ -26,19 +26,19 @@ The solution here was really simple:
 
 ```lua
 vim.lsp.config("jdtls", {
-	settings = {
-		java = {
-			configuration = {
-				runtimes = {
-					{
-						name = "JavaSE-25",
-						path = "$HOME/.sdkman/candidates/java/current",
-						default = true,
-					},
-				},
-			},
-		},
-	},
+  settings = {
+    java = {
+      configuration = {
+        runtimes = {
+          {
+            name = "JavaSE-25",
+            path = "$HOME/.sdkman/candidates/java/current",
+            default = true,
+          },
+        },
+      },
+    },
+  },
 })
 ```
 
