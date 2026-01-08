@@ -4,7 +4,7 @@ title = "Me brain think how more productive context"
 
 ## Core Problem
 
-LLM agents need context but humans shouldn't have to manually provide it every time. I want to capture everything once, then have the right context automatically surface when needed.
+I capture information everywhere: articles I read, code I write, conversations I have, tasks I track. But when I need that context later, I either can't find it or have to manually piece it together. LLMs could help, but they don't know about my preferences, past work, or the connections between my scattered data. I want a system where I throw everything in once, and the right context automatically surfaces when any tool or agent needs it, without me having to explain myself repeatedly.
 
 ## Storage Layer
 
