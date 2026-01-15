@@ -2,6 +2,8 @@
 title = "Me brain think how more productive context"
 +++
 
+> This is not a blog post. Just a random note of something I want to build in my free time.
+
 ## Core Problem
 
 I capture information everywhere: articles I read, code I write, conversations I have, tasks I track. But when I need that context later, I either can't find it or have to manually piece it together. LLMs could help, but they don't know about my preferences, past work, or the connections between my scattered data. I want a system where I throw everything in once, and the right context automatically surfaces when any tool or agent needs it, without me having to explain myself repeatedly.
