@@ -38,7 +38,7 @@ You may know me from:
   client.
 - Hackathons I've been to such as Huawei Tech Arena 2024 or Hackeurope
   (Ireland).
-- Around Cardiff, where I studied & played badminton.
+- Around Cardiff, where I studied & play badminton.
 
 I am currently working on a startup in securing the open-source supply chain.
 More details to be released soon :)
