@@ -43,6 +43,13 @@
         <stop offset="0%" stop-color="#e3342f" stop-opacity="0.55" />
         <stop offset="100%" stop-color="#991b1b" stop-opacity="0.1" />
       </radialGradient>
+      <filter id="irisGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
     </defs>
     <g id="eyesL"></g>
   </svg>
