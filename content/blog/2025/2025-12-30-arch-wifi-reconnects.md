@@ -98,9 +98,13 @@ Dec 30 05:52:33 fishy tailscaled[1477]: LinkChange: major, rebinding. New state:
 Dec 30 05:52:33 fishy tailscaled[1477]: LinkChange: major, rebinding. New state: interfaces.State{defaultRoute=enp0s20f0u1c4i2 ifs={duti:[10.8.0.7/24] enp0s20f0u1c4i2:[172.20.10.2/28 172.20.10.5/28 240e:430:2a11:c5dd:5af6:e64a:6c3d:e896/64 240e:430:2a11:c5dd:b890:47ff:fe0a:8ca8/64 llu6] tailscale0:[100.64.0.8/32 fd7a:115c:a1e0::8/128 llu6] wlan0:[192.168.1.104/24]} v4=true v6=true}
 ```
 
-My internet kept disconnecting and reconnecting in a loop. Only seemed to happen on one specific network in China.
+My internet kept disconnecting and reconnecting in a loop. Only seemed to happen
+on one specific network in China.
 
-What ended up being the problem was having both `NetworkManager` and `systemd-networkd` active at the same time. I don't know why that was the case but never had problems before. Probably due to this specific network being unstable and thus leading to the race condition.
+What ended up being the problem was having both `NetworkManager` and
+`systemd-networkd` active at the same time. I don't know why that was the case
+but never had problems before. Probably due to this specific network being
+unstable and thus leading to the race condition.
 
 Solution was to simply
 
@@ -112,7 +116,8 @@ sudo systemctl mask systemd-networkd-varlink.socket
 sudo systemctl mask systemd-networkd.socket
 ```
 
-Posting here so the next person that searches these strings from their logs can find it.
+Posting here so the next person that searches these strings from their logs can
+find it.
 
 Sometimes, `iwd` and `wpa_supplicant` are also both active. Just disable `iwd`
 
@@ -120,4 +125,5 @@ Sometimes, `iwd` and `wpa_supplicant` are also both active. Just disable `iwd`
 sudo pacman -Rcns iwd
 ```
 
-You may need to reboot your laptop and later edit connections using `nm-connection-editor` to use `wlp0s20f3` instead of `wlan0`
+You may need to reboot your laptop and later edit connections using
+`nm-connection-editor` to use `wlp0s20f3` instead of `wlan0`

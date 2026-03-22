@@ -2,7 +2,8 @@
 title = "chicory build.gradle.kts"
 +++
 
-The docs only showed how to do it in maven and it took a bit of trial and error before I got it working.
+The docs only showed how to do it in maven and it took a bit of trial and error
+before I got it working.
 
 ```diff
 diff --git a/4-application/app/build.gradle.kts b/4-application/app/build.gradle.kts
@@ -15,17 +16,17 @@ index 55b64da..5f56ba6 100644
      kotlin("plugin.serialization")
 +    kotlin("kapt")
  }
- 
+
  android {
 @@ -86,8 +87,11 @@ dependencies {
      implementation(libs.coil.network)
      implementation(libs.converter.gson)
- 
+
 +    implementation(libs.chicory.runtime)
 +    implementation(libs.chicory.annotations)
      implementation(libs.androidx.datastore.preferences)
      testImplementation(libs.kotlinx.coroutines.test)
- 
+
      ksp(libs.androidx.room.compiler)
 -}
 +    kapt(libs.chicory.processor)
@@ -40,14 +41,15 @@ index a760189..2e27d4f 100644
 @@ -2,26 +2,26 @@
 [versions]
  +chicory = "1.2.1"
- 
+
  [libraries]
 +chicory-runtime = { module = "com.dylibso.chicory:runtime", version.ref = "chicory" }
 +chicory-annotations = {module = "com.dylibso.chicory:host-module-annotations-experimental", version.ref = "chicory" }
 +chicory-processor = {module = "com.dylibso.chicory:host-module-processor-experimental", version.ref = "chicory"}
 ```
 
-`kapt` is used rather than `ksp` despite being deprecated due to incompatibilities.
+`kapt` is used rather than `ksp` despite being deprecated due to
+incompatibilities.
 
 Also, example zig `wasm`
 
@@ -75,4 +77,5 @@ class WasmHost(ctx: MyAppContext){
 }
 ```
 
-Note that you need to do `extern "<module name>"` which corresponds to `@HostModule("<module name>")`. Strings are passed as i32 pointers.
+Note that you need to do `extern "<module name>"` which corresponds to
+`@HostModule("<module name>")`. Strings are passed as i32 pointers.

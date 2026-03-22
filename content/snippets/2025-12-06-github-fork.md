@@ -2,23 +2,25 @@
 title = "Snippet: GitHub workflow to sync downstream forks"
 +++
 
-Had enough of going through the all the personal forks I have of projects where I containerize them and make personal preference changes that will never make it into upstream. Here's a dead simple workflow for rebase and force push.
+Had enough of going through the all the personal forks I have of projects where
+I containerize them and make personal preference changes that will never make it
+into upstream. Here's a dead simple workflow for rebase and force push.
 
 ```yml
 name: Sync Fork with Upstream (Force Push)
 
 on:
   schedule:
-    - cron: "0 1 * * *"
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 # ============================================
 # CONFIGURATION - Edit these for your fork
 # ============================================
 env:
-  UPSTREAM_REPO: "https://github.com/iv-org/invidious-companion.git"
-  UPSTREAM_BRANCH: "master"
-  FORK_BRANCH: "master"
+  UPSTREAM_REPO: 'https://github.com/iv-org/invidious-companion.git'
+  UPSTREAM_BRANCH: 'master'
+  FORK_BRANCH: 'master'
 # ============================================
 
 jobs:
@@ -65,9 +67,11 @@ jobs:
         if: steps.rebase.outputs.result == 'conflict'
         uses: peter-evans/create-issue-from-file@v5
         with:
-          title: "Upstream Sync Conflict"
+          title: 'Upstream Sync Conflict'
           content-filepath: .github/conflict-notice.md
           labels: upstream-sync, conflict
 ```
 
-You need to create a `.github/conflict-notice.md` file with just some text/instructions in case rebase fails. It'll open an issue informing you about it.
+You need to create a `.github/conflict-notice.md` file with just some
+text/instructions in case rebase fails. It'll open an issue informing you about
+it.

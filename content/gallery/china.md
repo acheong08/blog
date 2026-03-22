@@ -3,8 +3,10 @@ title = "China"
 template = "gallery.html"
 +++
 
-
-One interesting thing to note—all the places in these photos, except for Xinjiang, I travelled to by public transport and walking. I cannot praise enough the state of infrastructure in the country. Less than a pound to get anywhere within a province, each of which is about half the size of the UK.
+One interesting thing to note—all the places in these photos, except for
+Xinjiang, I travelled to by public transport and walking. I cannot praise enough
+the state of infrastructure in the country. Less than a pound to get anywhere
+within a province, each of which is about half the size of the UK.
 
 <div class="gallery-container">
     <div class="gallery-row">

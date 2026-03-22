@@ -1,0 +1,57 @@
+<header class="site-header">
+  <nav>
+    <ul>
+      <li>
+        {{ if eq .Page.UrlPath "" }}
+        <a href="/" class="active">Home</a>
+        {{ else }}
+        <a href="/">Home</a>
+        {{ end }}
+      </li>
+      <li>
+        {{ if eq .Page.UrlPath "posts/" }}
+        <a href="/posts/" class="active">Blog</a>
+        {{ else }}
+        <a href="/posts/">Blog</a>
+        {{ end }}
+      </li>
+      <li>
+        {{ if eq .Page.UrlPath "bookmarks/" }}
+        <a href="/bookmarks/" class="active">Bookmarks</a>
+        {{ else }}
+        <a href="/bookmarks/">Bookmarks</a>
+        {{ end }}
+      </li>
+      <li>
+        {{ if eq .Page.UrlPath "gallery/" }}
+        <a href="/gallery/" class="active">Gallery</a>
+        {{ else }}
+        <a href="/gallery/">Gallery</a>
+        {{ end }}
+      </li>
+    </ul>
+  </nav>
+</header>
+<div class="eyes-bg" aria-hidden="true">
+  <svg
+    class="eyes left"
+    viewBox="0 0 200 800"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    <defs>
+      <radialGradient id="eyeGrad" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.55" />
+        <stop offset="100%" stop-color="var(--accent-700)" stop-opacity="0.1" />
+      </radialGradient>
+    </defs>
+    <g id="eyesL"></g>
+  </svg>
+  <svg
+    class="eyes right"
+    viewBox="0 0 200 800"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    <use href="#eyeGrad" />
+    <g id="eyesR"></g>
+  </svg>
+</div>

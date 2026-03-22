@@ -3,7 +3,8 @@ title = "The United Kingdom"
 template = "gallery.html"
 +++
 
-Living here feels like being back in the middle ages. Extremely beautiful buildings but shit infrastructure and trash all over the street.
+Living here feels like being back in the middle ages. Extremely beautiful
+buildings but shit infrastructure and trash all over the street.
 
 <div class="gallery-container">
     <div class="gallery-row">

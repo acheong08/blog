@@ -17,7 +17,8 @@ title = "Photo Gallery"
 
 Photos were taken either on an iPhone 6s or iPhone 11. Forgive the resolution.
 
-While I have a fair number of photos on my phone, I've never used social media enough to post them anywhere. Might as well dump them here.
+While I have a fair number of photos on my phone, I've never used social media
+enough to post them anywhere. Might as well dump them here.
 
 <style>
     .gallery-container {

@@ -1,39 +1,40 @@
-{{ template "_header.html" .}}
-<main class="content container">
-  <div style="display:flex; align-items: center; gap: 1rem;">
-    <h1>{{$.Title}}</h1>
-    <a href="/feed.xml" style="display: flex; align-items: center;">
-      <img src="https://www.svgrepo.com/show/163348/rss.svg" width="20" alt="RSS" style="margin: 0;">
-      <span>RSS</span>
-    </a>
-  </div>
-  {{$.Content}}
+<!doctype html>
+<html lang="en">
+  <head>
+    {{ template "_head.html" . }}
+  </head>
+  <body>
+    {{ template "_nav.html" . }}
+    <main class="content container">
+      <div style="display: flex; align-items: center; gap: 1rem">
+        <h1>{{$.Title}}</h1>
+        <a href="/feed.xml" style="display: flex; align-items: center">
+          <img
+            src="https://www.svgrepo.com/show/163348/rss.svg"
+            width="20"
+            alt="RSS"
+            style="margin: 0"
+          />
+          <span>RSS</span>
+        </a>
+      </div>
+      {{$.Content}} {{ $year := 0 }} {{ $month := 0 }} {{ range $i, $post :=
+      $.Posts }} {{ if not (eq $post.DatePublished.Year $year) }} {{ $year =
+      $post.DatePublished.Year }} {{ $month = 0 }}
+      <h2>{{ $post.DatePublished.Year }}</h2>
+      {{ end }} {{ if not (eq $post.DatePublished.Month $month) }} {{ $month =
+      $post.DatePublished.Month }}
+      <h4>{{ $post.DatePublished.Format "January" }}</h4>
+      {{ end }}
 
-    {{ $year := 0 }}
-    {{ $month := 0 }}
-    {{ range $.Posts }}
-    {{- if not (eq .DatePublished.Year $year) }}
-        {{- if gt $year 0 }}
-        </ul>
-        {{- end }}
-  <h2>{{ .DatePublished.Year }}</h2>
-     {{- $year = .DatePublished.Year -}}
-     {{- $month = 0 -}}
-    {{ end }}
-    {{- if not (eq .DatePublished.Month $month) }}
-        {{- if gt $month 0 }}
-        </ul>
-       {{- end }}
-   <h4>{{ .DatePublished.Format "January" }}</h4>
-   <ul>
-     {{- $month = .DatePublished.Month -}}
-    {{ end }}
-    <li>
-      <a href="/{{ .UrlPath }}">{{ .Title }}</a><br>
-      <small>{{ .DatePublished.Format "Jan 2, 2006" }}</small>
-    </li>
-    {{- end -}}
-  </ul>
-</main>
-
-{{ template "_footer.html" .}}
+      <ul class="posts-list">
+        <li>
+          <a href="/{{ $post.UrlPath }}">{{ $post.Title }}</a><br />
+          <small>{{ $post.DatePublished.Format "Jan 2, 2006" }}</small>
+        </li>
+      </ul>
+      {{ end }}
+    </main>
+    {{ template "_foot.html" . }}
+  </body>
+</html>

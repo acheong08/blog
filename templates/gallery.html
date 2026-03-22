@@ -1,91 +1,118 @@
-{{ template "default.html" .}}
-<style>
-  img {
-    margin-top: 0.1rem;
-    margin-bottom: 0.1rem;
-}
-.no-margin img {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-.gallery-container {
-    display: flex;
-    flex-wrap: nowrap;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch;
-    width: 100%;
-    margin: 2rem 0;
-}
-
-.gallery-container img {
-    width: 100%;
-    height: auto;
-    border-radius: 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.gallery-container img:hover {
-    transform: scale(1.03);
-}
-.gallery-container figure {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-}
-.gallery-container figcaption {
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    text-align: center;
-}
-.gallery-row {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 0.5rem; /* Adjusted gap to match recent changes */
-    justify-content: center;
-    align-items: stretch;
-    margin: 1rem 0;
-}
-.gallery-row img, video {
-    flex: 0 1 auto; /* Changed from flex: 1 1 0 */
-    min-width: 0;
-    width: auto;
-    max-width: 100%;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-    display: block;
-}
-@media (max-width: 768px) {
-    .gallery-container {
-      gap: 1rem;
-      padding: 0 0.5rem;
-    }
-
-    .gallery-container figure {
-      flex: 1 1 100%;
-      max-width: none;
-    }
-
-    .gallery-row {
-      flex-direction: column;
-      padding: 0 0.5rem;
-    }
-
-    .gallery-row img, .gallery-row video {
-      flex: 1 1 100%;
-      border-radius: 0.75rem;
-    }
-
-    .gallery-container figcaption {
-      font-size: 1.1rem;
-      margin: 0.75rem 0;
-    }
-}
-</style>
+<!doctype html>
+<html lang="en">
+  <head>
+    {{ template "_head.html" . }}
+  </head>
+  <body>
+    {{ template "_nav.html" . }}
+    <style>
+      img {
+        margin-top: 0.1rem;
+        margin-bottom: 0.1rem;
+      }
+      .no-margin img {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      .gallery-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+        width: 100%;
+        margin: 2rem 0;
+      }
+      .gallery-container img {
+        width: 100%;
+        height: auto;
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      .gallery-container img:hover {
+        transform: scale(1.03);
+      }
+      .gallery-container figure {
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+      }
+      .gallery-container figcaption {
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        text-align: center;
+      }
+      .gallery-row {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        justify-content: center;
+        align-items: stretch;
+        margin: 1rem 0;
+      }
+      .gallery-row img,
+      video {
+        flex: 0 1 auto;
+        min-width: 0;
+        width: auto;
+        max-width: 100%;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s;
+        display: block;
+      }
+      @media (max-width: 768px) {
+        .gallery-container {
+          gap: 1rem;
+          padding: 0 0.5rem;
+        }
+        .gallery-container figure {
+          flex: 1 1 100%;
+          max-width: none;
+        }
+        .gallery-row {
+          flex-direction: column;
+          padding: 0 0.5rem;
+        }
+        .gallery-row img,
+        .gallery-row video {
+          flex: 1 1 100%;
+          border-radius: 0.75rem;
+        }
+        .gallery-container figcaption {
+          font-size: 1.1rem;
+          margin: 0.75rem 0;
+        }
+      }
+    </style>
+    <article class="content container">
+      <h1>{{ .Title }}</h1>
+      {{ if not .Page.DatePublished.IsZero }}
+      <p class="post-date">
+        <small
+          >By
+          <a class="p-author h-card" href="{{ .Site.Url }}">Antonio Cheong</a>
+          on
+          <time
+            class="dt-published"
+            datetime="{{ .Page.DatePublished.Format `2006-01-02T15:04:05Z07:00` }}"
+            >{{ .Page.DatePublished.Format `Jan 2, 2006` }}</time
+          >
+          on
+          <a class="u-url" href="{{ .Page.Permalink }}">Permalink</a>.</small
+        >
+      </p>
+      {{ end }}
+      <div class="e-content">{{ .Content }}</div>
+      {{ if not .Page.DatePublished.IsZero }}
+      <hr />
+      {{ end }}
+    </article>
+    {{ template "_foot.html" . }}
+  </body>
+</html>

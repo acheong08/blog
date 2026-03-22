@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {{ template "_head.html" . }}
+  </head>
+  <body>
+    {{ template "_nav.html" . }}
+    <article class="content container">
+      <h1>{{ .Title }}</h1>
+      {{ if not .Page.DatePublished.IsZero }}
+      <p class="post-date">
+        <small
+          >By
+          <a class="p-author h-card" href="{{ .Site.Url }}">Antonio Cheong</a>
+          on
+          <time
+            class="dt-published"
+            datetime="{{ .Page.DatePublished.Format `2006-01-02T15:04:05Z07:00` }}"
+            >{{ .Page.DatePublished.Format `Jan 2, 2006` }}</time
+          >
+          on
+          <a class="u-url" href="{{ .Page.Permalink }}">Permalink</a>.</small
+        >
+      </p>
+      {{ end }}
+      <div class="e-content">{{ .Content }}</div>
+      {{ if not .Page.DatePublished.IsZero }}
+      <hr />
+      {{ end }}
+    </article>
+    {{ template "_foot.html" . }}
+  </body>
+</html>
