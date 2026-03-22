@@ -8,4 +8,5 @@ Color scheme:
 
 - Background gradient: #13165d to #260649 - RIM Blue -> Purple
 - Primary text color: #e8e4db - Sora White
-- Primary accent color: #D3021F - RIM Red
+- Primary accent color: #EAA9C4 - KAF Alien Pink
+- Secondary accent: #DC555F - LOLUET 3D Orange
