@@ -9,6 +9,10 @@ template = "home.html"
 
 Hello world. This is the site of Antonio Cheong.
 
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;">
+
+<div style="flex: 1; min-width: 300px;">
+
 You may know me from:
 
 - Bug bounties, including
@@ -40,6 +44,12 @@ I am currently working on a startup in securing the open-source supply chain.
 More details to be released soon :)
 
 Bored? Check out my [blog](/posts/) or [photo gallery](/gallery/)!
+
+</div>
+
+<img src="/img/missing.webp" alt="Missing in an abandoned town" style="flex-shrink: 0; max-height: 28rem; max-width: 100%; height: auto; border: 3px solid #4a4a6a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+
+</div>
 
 ## <span id="contact">Contact</span>
 
