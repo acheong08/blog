@@ -133,22 +133,41 @@
       const parent = s.iris.parentNode
       const svg = parent.ownerSVGElement
       const rect = svg.getBoundingClientRect()
-      let sx = (clientX - rect.left) / rect.width
-      const sy = (clientY - rect.top) / rect.height
-      if (svg.classList.contains('right')) sx = 1 - sx
+
+      // Get this specific eye's center position in screen coordinates
+      const eyeScreenX = rect.left + (s.cx0 / svg.viewBox.baseVal.width) * rect.width
+      const eyeScreenY = rect.top + (s.cy0 / svg.viewBox.baseVal.height) * rect.height
+
+      // Calculate angle and distance from this eye to cursor
+      const dx = clientX - eyeScreenX
+      const dy = clientY - eyeScreenY
+      const angle = Math.atan2(dy, dx)
+      const dist = Math.sqrt(dx * dx + dy * dy)
+
+      // Max distance for full offset (in pixels)
+      const maxDist = 400
+      const intensity = Math.min(dist / maxDist, 1)
 
       const sclera = parent.querySelector('ellipse')
       const rx = +sclera.getAttribute('rx')
       const ry = +sclera.getAttribute('ry')
       const rI = s.baseR
 
-      const dx = (sx - 0.5) * rx * 0.6
-      const dy = (sy - 0.5) * ry * 0.6
-      const maxX = Math.min(rx - rI - 2, 6)
-      const maxY = Math.min(ry - rI - 2, 5)
+      // Max movement bounds within the sclera
+      const maxX = Math.min(rx - rI - 2, 8)
+      const maxY = Math.min(ry - rI - 2, 6)
 
-      s.targetX = s.cx0 + clamp(dx, -maxX, maxX)
-      s.targetY = s.cy0 + clamp(dy, -maxY, maxY)
+      // Calculate offset based on angle and intensity
+      let offsetX = Math.cos(angle) * maxX * intensity
+      const offsetY = Math.sin(angle) * maxY * intensity
+
+      // The right panel is mirrored with scaleX(-1), so flip the X offset
+      if (svg.classList.contains('right')) {
+        offsetX = -offsetX
+      }
+
+      s.targetX = s.cx0 + offsetX
+      s.targetY = s.cy0 + offsetY
     })
   }
 
