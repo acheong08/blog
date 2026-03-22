@@ -2,8 +2,8 @@
   --bg-start: #0c0e39;
   --bg-end: #16032b;
   --primary-text: #e8e4db;
-  --primary-accent: #EAA9C4;
-  --secondary-accent: #DC555F;
+  --primary-accent: #eaa9c4;
+  --secondary-accent: #dc555f;
 }
 html {
   -webkit-text-size-adjust: 100%;
@@ -14,7 +14,7 @@ body {
   background: linear-gradient(180deg, var(--bg-start), var(--bg-end));
   background-attachment: fixed;
   padding: 24px;
-  max-width: 80vw;
+  max-width: 70vw;
   margin: 0 auto;
   font-family:
     Menlo,
@@ -40,6 +40,7 @@ footer {
 
 main {
   display: block;
+  min-height: 80vh;
 }
 
 a {
@@ -354,4 +355,12 @@ blockquote *:last-child,
 
 .posts-list:last-of-type {
   margin-bottom: 24px;
+}
+
+/* Custom */
+
+.peeps {
+  img {
+    margin: 0px;
+  }
 }
