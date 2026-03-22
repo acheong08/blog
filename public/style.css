@@ -1,20 +1,8 @@
 :root {
-  --bg: #0b0c10;
-  --bg-elev: #121318;
-  --text: #e6e6e6;
-  --muted: #a6a6a6;
-  --accent: #e3342f;
-  --accent-600: #c02622;
-  --accent-700: #991b1b;
-  --border: #24262e;
-  --link: #ff4d45;
-  --link-hover: #ffa39e;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --radius: 10px;
-  --maxw: 72rem;
+  --bg-start: #13165d;
+  --bg-end: #260649;
+  --primary-text: #e8e4db;
+  --primary-accent: #D3021F;
 }
 html {
   -webkit-text-size-adjust: 100%;

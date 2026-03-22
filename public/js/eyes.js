@@ -11,7 +11,7 @@
     sclera.setAttribute('rx', 26)
     sclera.setAttribute('ry', 18)
     sclera.setAttribute('fill', 'url(#eyeGrad)')
-    sclera.setAttribute('stroke', 'var(--border)')
+    sclera.setAttribute('stroke', '#24262e')
     sclera.setAttribute('stroke-width', '1')
     const veins = document.createElementNS('http://www.w3.org/2000/svg', 'path')
     veins.setAttribute(
@@ -33,7 +33,7 @@
     iris.setAttribute('cx', x)
     iris.setAttribute('cy', y)
     iris.setAttribute('r', 7)
-    iris.setAttribute('fill', 'var(--link)')
+    iris.setAttribute('fill', '#ff4d45')
     iris.classList.add('iris')
     const highlight = document.createElementNS(
       'http://www.w3.org/2000/svg',
@@ -50,7 +50,7 @@
     lid.setAttribute('y', y - 20)
     lid.setAttribute('width', 56)
     lid.setAttribute('height', 40)
-    lid.setAttribute('fill', 'var(--bg)')
+    lid.setAttribute('fill', '#0b0c10')
     lid.setAttribute('rx', 20)
     lid.setAttribute('ry', 20)
     lid.setAttribute('opacity', '0')
