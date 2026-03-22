@@ -29,3 +29,26 @@
       </ul>
     </nav>
 </header>
+<div class="eyes-bg" aria-hidden="true">
+  <svg
+    class="eyes left"
+    viewBox="0 0 200 800"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    <defs>
+      <radialGradient id="eyeGrad" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.55" />
+        <stop offset="100%" stop-color="var(--accent-700)" stop-opacity="0.1" />
+      </radialGradient>
+    </defs>
+    <g id="eyesL"></g>
+  </svg>
+  <svg
+    class="eyes right"
+    viewBox="0 0 200 800"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    <use href="#eyeGrad" />
+    <g id="eyesR"></g>
+  </svg>
+</div>
