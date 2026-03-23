@@ -47,7 +47,7 @@ Bored? Check out my [blog](/posts/) or [photo gallery](/gallery/)!
 
 </div>
 
-<img src="/img/missing.webp" alt="Missing in an abandoned town" style="flex-shrink: 0; max-height: 28rem; max-width: 100%; height: auto; border: 3px solid #4a4a6a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+<img src="/img/missing.webp" alt="Sora 行方不明 in an abandoned communist village" style="flex-shrink: 0; max-height: 28rem; max-width: 100%; height: auto; border: 3px solid #4a4a6a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
 
 </div>
 
