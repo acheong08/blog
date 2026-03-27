@@ -11,7 +11,21 @@
   </head>
   <body>
     {{ template "_nav.html" . }}
-    <main class="content container">{{.Content}}</main>
+    <main class="content container">
+      {{.Content}}
+
+      <h2>Latests posts</h2>
+      <ul>
+        {{ range $post := (slice .Posts 0 4) }}
+        <li>
+          <a href="/{{ $post.UrlPath }}">{{ $post.Title }}</a>
+          -
+          <small>{{ $post.DatePublished.Format "Jan 2, 2006" }}</small>
+        </li>
+        {{ end }}
+      </ul>
+      <p><a href="/posts/">View all posts</a>.</p>
+    </main>
     {{ template "_foot.html" . }}
   </body>
 </html>
