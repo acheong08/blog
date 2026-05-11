@@ -22,10 +22,12 @@ You may know me from:
   from October 2022
 - [CopilotChat.nvim](https://github.com/CopilotC-Nvim/CopilotChat.nvim) for
   which I was the original author from 2023.
+- Summer internship at Huawei's Cloud Reliability department working on stateful
+  fuzzing between May to August 2025.
 - [Research on Apple Location Services](https://github.com/acheong08/apple-corelocation-experiments)
   from May 2024 and
   [analytics](https://duti.dev/blog/2025/wip-location-services/) during my
-  internship at the University of Cambridge August 2025.
+  internship at the University of Cambridge September 2025.
 - Various reverse engineering efforts around
   [ChatGPT](https://github.com/acheong08/ChatGPT/),
   [Sydney](https://github.com/acheong08/EdgeGPT), and
@@ -56,6 +58,8 @@ Bored? Check out my [blog](/posts/) or [photo gallery](/gallery/)!
 - [Email](mailto:acheong@duti.dev): Expect a response in 2-3 business days.
 - [Matrix](https://matrix.to/#/@acheong:conduit.duti.dev): I prefer email, but
   you can call me over Matrix.
+- [LinkedIn](https://www.linkedin.com/in/acheong08/): If you're a particular
+  type of sociopath
 
 ```pgp
 -----BEGIN PGP PUBLIC KEY BLOCK-----
