@@ -1,6 +1,10 @@
 +++
-title = "[WIP] On the Privacy of Apple Location Services & Analytics"
+title = "[Incomplete] On the Privacy of Apple Location Services & Analytics"
 +++
+
+> Note: This was written late 2025 with the expectation that I will complete
+> this research at some point. I now realize I'll probably never have the time
+> to finish it, and am therefore releasing it now.
 
 > [Skip technical stuff](#user-relevant-info)
 
@@ -14,8 +18,8 @@ Contrary to popular belief, GPS is no longer the primary method mobile devices
 use to determine location.
 
 Instead, companies like Google and Apple maintain massive databases of Wi-Fi
-hotspots and cell towers. Phones collect signals from these beacons - including
-strength and identifiers - and use them to triangulate their position, with the
+hotspots and cell towers. Phones collect signals from these beacons, including
+strength and identifiers, and use them to triangulate their position, with the
 help of data provided by these vendors.
 
 ![Trilateration algorithm for n points](https://r2.duti.dev/blog/images/trilateration.png)
@@ -28,7 +32,7 @@ points with high accuracy.
 A recent paper,
 ["Surveilling the Masses with Wi-Fi-Based Positioning Systems"](https://www.cs.umd.edu/~dml/papers/wifi-surveillance-sp24.pdf)
 (May 2024), explores how Apple’s location services can be weaponized to track
-movements worldwide - particularly in sensitive contexts like war zones and
+movements worldwide, particularly in sensitive contexts like war zones and
 natural disasters.
 
 I found the paper fascinating. On the same day it was published, I began reverse
@@ -79,7 +83,7 @@ chosen.
 
 ## Working Out the Protobuf
 
-The payload itself can contain any arbitrary bytes - including encrypted blobs -
+The payload itself can contain any arbitrary bytes, including encrypted blobs -
 but in most observed cases it uses **protobuf**. The next challenge is
 discovering the protobuf definitions.
 
@@ -100,7 +104,7 @@ ipsw extract --files --pattern ".*" iPhone15,2_18.6.2_22G100_Restore.ipsw
 ```
 
 On macOS, the iOS Simulator runs its system binaries natively, which allows
-attaching `lldb` - but only with SIP (System Integrity Protection) disabled.
+attaching `lldb`, but only with SIP (System Integrity Protection) disabled.
 
 ```sh
 ps aux | grep simruntime | grep locationd   # Find the PID of locationd running within the simulator
@@ -124,7 +128,7 @@ obtain the virtual address expected by Ghidra.
 Example:
 
 ```
-p/x 0x1048ddda0 - 0x1048d4000 = 0x9da0
+p/x 0x1048ddda0, 0x1048d4000 = 0x9da0
 p/x 0x100000000 + 0x9da0      = 0x100009da0
 ```
 
@@ -239,7 +243,7 @@ Decoded data from a collected request:
   "16": 1,
   "17": "8D0DDB68-0C2D-4A39-AD20-77454B02D876",
   "18": 0,
-  "merchant": "2TL BRUSSEL - NOORD",
+  "merchant": "2TL BRUSSEL, NOORD",
   "21": "",
   "timestamp": 4739811754110877696,
   "8": 0,
@@ -253,7 +257,7 @@ Decoded data from a collected request:
 - Merchant name
 - Timestamp
 
-  Surprisingly, disabling the toggle only stops **uploading** the data - not
+  Surprisingly, disabling the toggle only stops **uploading** the data, not
   **collection**. Data is stored locally until you re-enable the setting, at
   which point it’s uploaded. In this case, the timestamp (4739811754110877696 →
   Aug 30, 2025) is from a week before September 6th when this request was
@@ -274,7 +278,7 @@ Observed payloads include:
 - IPs and ports the device is connected to
 - BSSIDs
 
-With settings disabled, requests are still sent - but reduced to just home
+With settings disabled, requests are still sent, but reduced to just home
 location and timestamps.
 
 ### <span id="endpoint-summary">Endpoint summary</span>
@@ -291,13 +295,13 @@ location and timestamps.
 Apple’s terms use vague phrases like _“in transit”_ and _“points of interest.”_
 In practice, these cover nearly all daily activity:
 
-- **Transit** applies whenever your phone is moving - whether you’re walking,
+- **Transit** applies whenever your phone is moving, whether you’re walking,
   cycling, or driving.
 - **Points of interest** applies whenever you stop somewhere with a map label -
   your home, workplace, shops, restaurants, and so on.
 
 The result is that your iPhone sends location data whether you’re moving or
-standing still - essentially **all the time**. During testing, I saw logs for
+standing still, essentially **all the time**. During testing, I saw logs for
 every commute, every stop at a shop or restaurant, and every app I opened
 throughout the week.
 
@@ -310,7 +314,7 @@ almost always transmitted within milliseconds of each other, and their GPS
 coordinates and timestamps can be matched to link app usage with a specific
 route.
 
-Beyond timing, every request carries device fingerprints - locale, iOS version,
+Beyond timing, every request carries device fingerprints, locale, iOS version,
 user agent, and IP address. Combined with the set of installed apps (which Apple
 already knows for each account), these details form a unique device profile.
 Even if Apple labels traffic as _“anonymous,”_ the mix of app usage, device
@@ -356,7 +360,7 @@ suspects.
 That dataset would contain:
 
 1. Device metadata from ARPC requests (locale, iOS version, etc.).
-2. Routes taken - technically “anonymous,” but timestamped and precise.
+2. Routes taken, technically “anonymous,” but timestamped and precise.
 3. Lists of apps opened at specific locations.
 
 By aligning timing between (2) and (3), investigators can link routes to app
@@ -411,21 +415,13 @@ during the update window rather than reflecting real movement.
 
 <img alt="Distribution of time between updates" src="https://r2.duti.dev/blog/images/update_intervals_analysis.png" style="max-height:20rem;"/>
 
-Every day, there is a consistent **5-hour update window** - from **05:00 to
-09:00 UTC** - during which database entries are refreshed. Each access point is
+Every day, there is a consistent 5-hour update window, from **05:00 to 09:00
+UTC**, during which database entries are refreshed. Each access point is
 guaranteed at least one update every 24 hours, though many are updated multiple
 times within the window. This clustering explains the bursts of short intervals
 seen in the update graphs.
 
 Importantly, the update windows are not isolated to specific tiles. Instead,
 updates occur across large numbers of tiles simultaneously, implying that Apple
-maintains a **centralized database** rather than distributed, region-specific
+maintains a centralized database rather than distributed, region-specific
 updates.
-
-**Open questions:**
-
-- The oscillation pattern produces a distinctive distribution shape in the data.
-  This could be intentional, perhaps as a **privacy mechanism** to obscure
-  whether updates are tied to human presence.
-- The artificial feel of the distances suggests further smoothing or obfuscation
-  may be applied server-side.
