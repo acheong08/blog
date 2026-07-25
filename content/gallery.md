@@ -13,6 +13,9 @@ title = "Photo Gallery"
     <a class="card uk" href="/gallery/uk/">
         <h3> United Kingdom </h3>
     </a>
+    <a class="card taiwan" href="/gallery/taiwan/">
+        <h3> Taiwan </h3>
+    </a>
 </div>
 
 Photos were taken either on an iPhone 6s or iPhone 11. Forgive the resolution.
@@ -62,6 +65,7 @@ enough to post them anywhere. Might as well dump them here.
     .card.china { background-image: url('https://r2.duti.dev/pictures/thumbnails/china.jpg'); }
     .card.malaysia { background-image: url('https://r2.duti.dev/pictures/thumbnails/penang.jpg'); }
     .card.uk { background-image: url('https://r2.duti.dev/pictures/thumbnails/UK.jpg'); }
+    .card.taiwan { background-image: url('https://r2.duti.dev/pictures/thumbnails/taiwan.jpeg'); }
 
     /* Mobile Responsive Adjustments */
     @media (max-width: 768px) {
