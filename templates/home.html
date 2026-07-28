@@ -16,13 +16,14 @@
 
       <h2>Latests posts</h2>
       <ul>
-        {{ range $post := (slice .Posts 0 4) }}
+        {{ range $post := (slice .Posts 0 4) }} {{ if not (HasPrefix
+        $post.UrlPath "archive/") }}
         <li>
           <a href="/{{ $post.UrlPath }}">{{ $post.Title }}</a>
           -
           <small>{{ $post.DatePublished.Format "Jan 2, 2006" }}</small>
         </li>
-        {{ end }}
+        {{ end }} {{ end }}
       </ul>
       <p><a href="/posts/">View all posts</a>.</p>
     </main>

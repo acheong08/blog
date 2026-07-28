@@ -6,15 +6,9 @@
   <body>
     {{ template "_nav.html" . }}
     <main class="content container">
-      <div style="display: flex; align-items: center; gap: 1rem">
-        <h1>{{$.Title}}</h1>
-        <a href="/feed.xml" style="display: flex; align-items: center">
-          <img src="/img/rss.svg" width="20" alt="RSS" style="margin: 0" />
-          <span>RSS</span>
-        </a>
-      </div>
+      <h1>{{$.Title}}</h1>
       {{$.Content}} {{ $year := 0 }} {{ $month := 0 }} {{ range $i, $post :=
-      $.Posts }} {{ if not (HasPrefix $post.UrlPath "archive/") }} {{ if not (eq
+      $.Posts }} {{ if (HasPrefix $post.UrlPath "archive/") }} {{ if not (eq
       $post.DatePublished.Year $year) }} {{ $year = $post.DatePublished.Year }}
       {{ $month = 0 }}
       <h2>{{ $post.DatePublished.Year }}</h2>

@@ -16,6 +16,13 @@
         {{ end }}
       </li>
       <li>
+        {{ if eq .Page.UrlPath "archive/" }}
+        <a href="/archive/" class="active">Archive</a>
+        {{ else }}
+        <a href="/archive/">Archive</a>
+        {{ end }}
+      </li>
+      <li>
         {{ if eq .Page.UrlPath "bookmarks/" }}
         <a href="/bookmarks/" class="active">Bookmarks</a>
         {{ else }}
