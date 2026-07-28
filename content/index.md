@@ -7,11 +7,10 @@ template = "home.html"
 
 <div style="flex: 1; min-width: 300px;">
 
-# ねえ もしもし聞こえてる?
-
 > ## 🚧 建設中，請稍候 。。。🚧
 
-Hello world. This is the site of Antonio Cheong.
+Hello world. I'm Antonio Cheong, from Malaysia, based in the UK, and currently
+in San Francisco.
 
 You may know me from:
 
@@ -40,9 +39,7 @@ You may know me from:
 - Hackathons I've been to such as Huawei Tech Arena 2024 or Hackeurope
   (Ireland).
 - Around Cardiff, where I studied & play badminton.
-
-I am currently working on a startup in securing the open-source supply chain.
-More details to be released soon :)
+- Entrepreneurs First @ San Francisco
 
 Bored? Check out my [blog](/posts/) or [photo gallery](/gallery/)!
 
@@ -82,7 +79,8 @@ Timezone: UTC
 
 <div class="peeps">
 <a href="https://duti.dev"><img src="/img/peeps/duti.dev.png" alt="kibty.town"></a>
-<a href="https://benjaminhollon.com/"><img src="https://benjaminhollon.com/assets/images/favicon.ico" alt="kibty.town"></a>
+<a href="https://benjaminhollon.com/"><img src="https://benjaminhollon.com/assets/images/favicon.ico" alt="Benjamin Hollon"></a>
+<a href="https://mredchristie.dev/"><img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='60' dominant-baseline='middle' text-anchor='middle' font-size='80' fill='%2300ff88' stroke='%230a0e27' stroke-width='3' font-family='monospace' font-weight='bold'>EC</text></svg>" alt="Ed Christie"></a>
 <a href="https://kibty.town"><img src="/img/peeps/kibty.town-badge.gif" alt="kibty.town"></a>
 <a href="https://mrbruh.com"><img src="/img/peeps/mrbruh-badge.png" alt="mrbruh.com"></a>
 </div>

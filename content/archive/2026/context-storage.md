@@ -175,6 +175,3 @@ def articles_on_topic(topic: str):
    - Check screen time in relevant IDEs from `core/screen_time`
 6. Synthesizes comparison report
 7. Stores workflow: "compare_language_activity(lang1, lang2, timeframe)"
-
-I've just bought konteksto.dev... The number of domains in my project graveyard
-grows...
