@@ -82,6 +82,7 @@ Timezone: UTC
 
 <div class="peeps">
 <a href="https://duti.dev"><img src="/img/peeps/duti.dev.png" alt="kibty.town"></a>
+<a href="https://benjaminhollon.com/"><img src="https://benjaminhollon.com/assets/images/favicon.ico" alt="kibty.town"></a>
 <a href="https://kibty.town"><img src="/img/peeps/kibty.town-badge.gif" alt="kibty.town"></a>
 <a href="https://mrbruh.com"><img src="/img/peeps/mrbruh-badge.png" alt="mrbruh.com"></a>
 </div>

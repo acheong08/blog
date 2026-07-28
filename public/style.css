@@ -366,6 +366,9 @@ blockquote *:last-child,
 .peeps {
   img {
     margin: 0px;
+    width: 88px;
+    height: 31px;
+
   }
 }
 
