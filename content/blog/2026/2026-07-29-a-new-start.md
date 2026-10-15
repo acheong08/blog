@@ -6,13 +6,9 @@ This site was initially created as a semi-anonymous blog, where I, without a
 real public identity could post whatever I wanted without consequence. Well, my
 life has taken a bit of an unexpected turn, and privacy is no longer possible.
 
-Once on the internet, content can almost never be hidden away again. I won't
-delete my old posts, but they'll be archived under [/archive](/archive) with the
-disclaimer that those old musings no longer represent my current views & does
-not intend to defame. I've deleted _some_ posts but honestly there shouldn't be
-anything too outrageous that anyone would wanna look into. For personal posts,
-I'll be migrating to post on a new anonymous domain. Obviously not gonna link
-it.
+I've deleted _some_ posts but honestly there shouldn't be anything too
+outrageous that anyone would wanna look into. For personal posts, I'll be
+migrating to post on a new anonymous domain. Obviously not gonna link it.
 
 ## A Brief History
 

@@ -12,42 +12,36 @@ template = "home.html"
 Hello world. I'm Antonio Cheong, from Malaysia, based in the UK, and currently
 in San Francisco.
 
-You may know me from:
-
-- Bug bounties, including
-  [CVE-2022-26726](https://github.com/acheong08/CVE-2022-26726-POC), a MacOS/IOS
-  privilege escalation exploit for TCC.
-- [One-click Stable Diffusion on Google Colab](https://github.com/acheong08/Diffusion-ColabUI)
-  from October 2022
-- [CopilotChat.nvim](https://github.com/CopilotC-Nvim/CopilotChat.nvim) for
-  which I was the original author from 2023.
-- Summer internship at Huawei's Cloud Reliability department working on stateful
-  fuzzing between May to August 2025.
-- [Research on Apple Location Services](https://github.com/acheong08/apple-corelocation-experiments)
-  from May 2024 and [analytics](https://duti.dev/blog/2026/location-services/)
-  during my internship at the University of Cambridge September 2025.
-- Various reverse engineering efforts around
-  [ChatGPT](https://github.com/acheong08/ChatGPT/),
-  [Sydney](https://github.com/acheong08/EdgeGPT), and
-  [Google Bard](https://github.com/acheong08/Bard) around 2022-2023 before any
-  APIs were available where my libraries gained over 1M downloads and 40k+ stars
-  total.
-- An API compatible
-  [implementation of Obsidian Sync](https://github.com/acheong08/obi-sync)
-  during the summer of 2023 derived purely from blindly reverse engineering the
-  client.
-- Hackathons I've been to such as Huawei Tech Arena 2024 or Hackeurope
-  (Ireland).
-- Around Cardiff, where I studied & play badminton.
-- Entrepreneurs First @ San Francisco
-
-Bored? Check out my [blog](/posts/) or [photo gallery](/gallery/)!
-
-</div>
-
-<img src="/img/行方不明.webp" alt="Sora 行方不明 in an abandoned communist village" style="flex-shrink: 0; max-height: 28rem; max-width: 100%; height: auto; border: 3px solid #4a4a6a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-
-</div>
+<!-- You may know me from: -->
+<!---->
+<!-- - Bug bounties, including -->
+<!--   [CVE-2022-26726](https://github.com/acheong08/CVE-2022-26726-POC), a MacOS/IOS -->
+<!--   privilege escalation exploit for TCC. -->
+<!-- - [One-click Stable Diffusion on Google Colab](https://github.com/acheong08/Diffusion-ColabUI) -->
+<!--   from October 2022 -->
+<!-- - [CopilotChat.nvim](https://github.com/CopilotC-Nvim/CopilotChat.nvim) for -->
+<!--   which I was the original author from 2023. -->
+<!-- - Summer internship at Huawei's Cloud Reliability department working on stateful -->
+<!--   fuzzing between May to August 2025. -->
+<!-- - [Research on Apple Location Services](https://github.com/acheong08/apple-corelocation-experiments) -->
+<!--   from May 2024 and [analytics](https://duti.dev/blog/2026/location-services/) -->
+<!--   during my internship at the University of Cambridge September 2025. -->
+<!-- - Various reverse engineering efforts around -->
+<!--   [ChatGPT](https://github.com/acheong08/ChatGPT/), -->
+<!--   [Sydney](https://github.com/acheong08/EdgeGPT), and -->
+<!--   [Google Bard](https://github.com/acheong08/Bard) around 2022-2023 before any -->
+<!--   APIs were available where my libraries gained over 1M downloads and 40k+ stars -->
+<!--   total. -->
+<!-- - An API compatible -->
+<!--   [implementation of Obsidian Sync](https://github.com/acheong08/obi-sync) -->
+<!--   during the summer of 2023 derived purely from blindly reverse engineering the -->
+<!--   client. -->
+<!-- - Hackathons I've been to such as Huawei Tech Arena 2024 or Hackeurope -->
+<!--   (Ireland). -->
+<!-- - Around Cardiff, where I studied & play badminton. -->
+<!-- - Entrepreneurs First @ San Francisco -->
+<!---->
+<!-- Bored? Check out my [blog](/posts/) or [photo gallery](/gallery/)! -->
 
 ## <span id="contact">Contact</span>
 
@@ -56,6 +50,12 @@ Bored? Check out my [blog](/posts/) or [photo gallery](/gallery/)!
   you can call me over Matrix.
 - [LinkedIn](https://www.linkedin.com/in/acheong08/): If you're a particular
   type of sociopath
+
+</div>
+
+<img src="/img/行方不明.webp" alt="Sora 行方不明 in an abandoned communist village" style="flex-shrink: 0; max-height: 28rem; max-width: 100%; height: auto; border: 3px solid #4a4a6a; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+
+</div>
 
 ```pgp
 -----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -73,12 +73,14 @@ AI6yY2fWS7BgkAFFpJpb8kGx2exqC8PMqQSQcxoQxxcO
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-Timezone: UTC
+Timezone: PDT (UTC-7)
 
 ### Cool People
 
+(click on the button to navigate to their site)
+
 <div class="peeps">
-<a href="https://duti.dev"><img src="/img/peeps/duti.dev.png" alt="kibty.town"></a>
+<!-- <a href="https://duti.dev"><img src="/img/peeps/duti.dev.png" alt="duti.dev"></a> -->
 <a href="https://benjaminhollon.com/"><img src="https://benjaminhollon.com/assets/images/favicon.ico" alt="Benjamin Hollon"></a>
 <a href="https://mredchristie.dev/"><img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='60' dominant-baseline='middle' text-anchor='middle' font-size='80' fill='%2300ff88' stroke='%230a0e27' stroke-width='3' font-family='monospace' font-weight='bold'>EC</text></svg>" alt="Ed Christie"></a>
 <a href="https://kibty.town"><img src="/img/peeps/kibty.town-badge.gif" alt="kibty.town"></a>
