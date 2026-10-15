@@ -7,10 +7,17 @@ template = "home.html"
 
 <div style="flex: 1; min-width: 300px;">
 
-> ## 🚧 建設中，請稍候 。。。🚧
+> ## hello world, im Antonio
 
-Hello world. I'm Antonio Cheong, from Malaysia, based in the UK, and currently
-in San Francisco.
+security researcher, developer, infra person, and insomniac.
+
+<span>
+  I do a bit of stuff on
+  <a class="github-badge" href="https://github.com/acheong08/">
+    GitHub <span class="stars">| 44k ⭐</span>
+  </a>
+  and sometimes hack random things.
+</span>
 
 <!-- You may know me from: -->
 <!---->
@@ -86,3 +93,33 @@ Timezone: PDT (UTC-7)
 <a href="https://kibty.town"><img src="/img/peeps/kibty.town-badge.gif" alt="kibty.town"></a>
 <a href="https://mrbruh.com"><img src="/img/peeps/mrbruh-badge.png" alt="mrbruh.com"></a>
 </div>
+
+<style>
+.github-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  vertical-align: baseline;
+
+  font: inherit;
+  font-size: 0.9em;
+  line-height: 1.3;
+  color: #e8e4df;
+  text-decoration: none;
+
+  background: #21112e;
+  border: 1px solid #71344f;
+  border-radius: 3px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.github-badge .stars {
+  color: #e36b80;
+}
+
+.github-badge:hover {
+  border-color: #e36b80;
+  background: #30152e;
+}
+</style>
